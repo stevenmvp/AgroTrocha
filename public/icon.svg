@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="AgroTrocha">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a" />
+      <stop offset="1" stop-color="#14532d" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#g)" />
+  <path d="M128 56c-20 24-44 47-44 80 0 26 20 44 44 44s44-18 44-44c0-33-24-56-44-80z" fill="#e2e8f0" opacity="0.95"/>
+  <path d="M64 188c22-18 46-26 64-26s42 8 64 26" fill="none" stroke="#e2e8f0" stroke-width="14" stroke-linecap="round" opacity="0.95"/>
+</svg>
