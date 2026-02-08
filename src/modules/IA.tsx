@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/api'
 import { analyzeTextWithAI } from '../lib/orderAnalyze'
+import { getErrorMessage } from '../lib/getErrorMessage'
 
 type Msg = {
   id: string
@@ -222,8 +223,8 @@ export function IAModule({
       })
       onToast({ kind: 'success', message: 'Pendiente creado desde IA.' })
       setAction(null)
-    } catch {
-      onToast({ kind: 'error', message: 'No pude crear pendiente desde IA.' })
+    } catch (e) {
+      onToast({ kind: 'error', message: `No pude crear pendiente desde IA: ${getErrorMessage(e)}` })
     } finally {
       setBusy(false)
     }
@@ -263,8 +264,8 @@ export function IAModule({
       setReqTitle('')
       setReqDetails('')
       setAction(null)
-    } catch {
-      onToast({ kind: 'error', message: 'No pude crear solicitud desde IA.' })
+    } catch (e) {
+      onToast({ kind: 'error', message: `No pude crear solicitud desde IA: ${getErrorMessage(e)}` })
     } finally {
       setBusy(false)
     }
@@ -291,8 +292,8 @@ export function IAModule({
         push({ id: makeId(), role: 'assistant', text: assistantText, at: new Date().toISOString() })
         speak(assistantText)
       }
-    } catch {
-      onToast({ kind: 'error', message: 'No pude consultar la IA (por ahora). Usando respuesta local.' })
+    } catch (e) {
+      onToast({ kind: 'error', message: `No pude consultar la IA: ${getErrorMessage(e)}. Usando respuesta local.` })
       const assistantText = localReply(text)
       push({ id: makeId(), role: 'assistant', text: assistantText, at: new Date().toISOString() })
       speak(assistantText)
@@ -310,13 +311,17 @@ export function IAModule({
   return (
     <main className="mx-auto max-w-xl px-4 py-4 md:max-w-6xl">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <section className="rounded-2xl border bg-white p-4 shadow-sm dark:bg-slate-900">
+        <section className="rounded-2xl border border-zinc-200/70 bg-white/70 p-4 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold">Pregúntale a la IA</h2>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{hint}</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{hint}</p>
             </div>
-            <button type="button" className="rounded-xl border bg-white px-3 py-2 text-xs font-semibold dark:bg-slate-950" onClick={clearChat}>
+            <button
+              type="button"
+              className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold dark:border-zinc-800/60 dark:bg-zinc-950/40"
+              onClick={clearChat}
+            >
               Limpiar
             </button>
           </div>
@@ -328,21 +333,21 @@ export function IAModule({
                 className={
                   'rounded-2xl border p-3 text-sm ' +
                   (m.role === 'user'
-                    ? 'ml-8 bg-slate-900 text-white border-slate-900 dark:bg-slate-950 dark:border-slate-800'
-                    : 'mr-8 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 dark:border-slate-800')
+                    ? 'ml-8 border-zinc-900 bg-zinc-900 text-white dark:border-zinc-800 dark:bg-zinc-950'
+                    : 'mr-8 border-zinc-200/70 bg-zinc-50 text-zinc-900 dark:border-zinc-800/60 dark:bg-zinc-950 dark:text-zinc-50')
                 }
               >
                 {m.text}
               </div>
             ))}
             {messages.length === 0 ? (
-              <div className="text-sm text-slate-600 dark:text-slate-300">Haz una pregunta para comenzar.</div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-300">Haz una pregunta para comenzar.</div>
             ) : null}
           </div>
 
           <div className="mt-3 flex items-end gap-2">
             <textarea
-              className="min-h-[44px] flex-1 resize-none rounded-2xl border bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-slate-300 dark:bg-slate-950 dark:border-slate-800"
+              className="min-h-[44px] flex-1 resize-none rounded-2xl border border-zinc-200/70 bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
               rows={2}
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -350,7 +355,7 @@ export function IAModule({
             />
             <button
               type="button"
-              className="rounded-2xl border bg-white px-3 py-3 text-sm font-semibold disabled:opacity-60 dark:bg-slate-950 dark:border-slate-800"
+              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm font-semibold disabled:opacity-60 dark:border-zinc-800/60 dark:bg-zinc-950/40"
               disabled={busy || listening}
               onClick={startDictation}
               title="Dictar"
@@ -358,7 +363,7 @@ export function IAModule({
               {listening ? (
                 <div className="agt-bars" aria-label="Escuchando">
                   {Array.from({ length: 10 }).map((_, i) => (
-                    <div key={i} className="agt-bar bg-slate-900 dark:bg-slate-50" />
+                    <div key={i} className="agt-bar bg-zinc-900 dark:bg-zinc-50" />
                   ))}
                 </div>
               ) : (
@@ -367,7 +372,7 @@ export function IAModule({
             </button>
             <button
               type="button"
-              className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-slate-50 dark:text-slate-900"
+              className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-emerald-500 dark:text-zinc-950"
               disabled={busy}
               onClick={send}
             >
@@ -375,14 +380,14 @@ export function IAModule({
             </button>
           </div>
 
-          <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
+          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
             Voz: depende del soporte del navegador. Próximo: AWS Transcribe + acciones más avanzadas.
           </p>
         </section>
 
-        <section className="rounded-2xl border bg-white p-4 shadow-sm dark:bg-slate-900">
+        <section className="rounded-2xl border border-zinc-200/70 bg-white/70 p-4 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
           <h2 className="text-base font-semibold">Acciones</h2>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
             Escalable: la IA puede disparar acciones del sistema.
           </p>
 
@@ -392,8 +397,8 @@ export function IAModule({
               className={
                 'rounded-xl border px-3 py-3 text-sm font-semibold ' +
                 (action === 'createPending'
-                  ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-50 dark:text-slate-900'
-                  : 'bg-white text-slate-900 dark:bg-slate-950 dark:border-slate-800')
+                  ? 'border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500 dark:text-zinc-950'
+                  : 'border-zinc-200/70 bg-white/70 text-zinc-900 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-50')
               }
               onClick={() => setAction(action === 'createPending' ? null : 'createPending')}
             >
@@ -404,8 +409,8 @@ export function IAModule({
               className={
                 'rounded-xl border px-3 py-3 text-sm font-semibold ' +
                 (action === 'createRequest'
-                  ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-50 dark:text-slate-900'
-                  : 'bg-white text-slate-900 dark:bg-slate-950 dark:border-slate-800')
+                  ? 'border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500 dark:text-zinc-950'
+                  : 'border-zinc-200/70 bg-white/70 text-zinc-900 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-50')
               }
               onClick={() => setAction(action === 'createRequest' ? null : 'createRequest')}
             >
@@ -414,10 +419,10 @@ export function IAModule({
           </div>
 
           {action === 'createPending' ? (
-            <div className="mt-3 rounded-2xl border bg-slate-50 p-3 dark:bg-slate-950 dark:border-slate-800">
+            <div className="mt-3 rounded-2xl border border-zinc-200/70 bg-white/70 p-3 dark:border-zinc-800/60 dark:bg-zinc-950/40">
               <div className="text-sm font-semibold">Nuevo pendiente</div>
               <textarea
-                className="mt-2 w-full resize-none rounded-2xl border bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-slate-300 dark:bg-slate-900 dark:border-slate-800"
+                className="mt-2 w-full resize-none rounded-2xl border border-zinc-200/70 bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
                 rows={4}
                 value={pendingText}
                 onChange={(e) => setPendingText(e.target.value)}
@@ -426,7 +431,7 @@ export function IAModule({
               <div className="mt-2 flex justify-end">
                 <button
                   type="button"
-                  className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-slate-50 dark:text-slate-900"
+                  className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-emerald-500 dark:text-zinc-950"
                   disabled={busy}
                   onClick={createPendingFromIA}
                 >
@@ -437,16 +442,16 @@ export function IAModule({
           ) : null}
 
           {action === 'createRequest' ? (
-            <div className="mt-3 rounded-2xl border bg-slate-50 p-3 dark:bg-slate-950 dark:border-slate-800">
+            <div className="mt-3 rounded-2xl border border-zinc-200/70 bg-white/70 p-3 dark:border-zinc-800/60 dark:bg-zinc-950/40">
               <div className="text-sm font-semibold">Nueva solicitud</div>
               <input
-                className="mt-2 w-full rounded-xl border bg-white px-3 py-2 text-sm dark:bg-slate-900 dark:border-slate-800"
+                className="mt-2 w-full rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
                 value={reqTitle}
                 onChange={(e) => setReqTitle(e.target.value)}
                 placeholder="Título"
               />
               <textarea
-                className="mt-2 w-full resize-none rounded-2xl border bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-slate-300 dark:bg-slate-900 dark:border-slate-800"
+                className="mt-2 w-full resize-none rounded-2xl border border-zinc-200/70 bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
                 rows={4}
                 value={reqDetails}
                 onChange={(e) => setReqDetails(e.target.value)}
@@ -455,7 +460,7 @@ export function IAModule({
               <div className="mt-2 flex justify-end">
                 <button
                   type="button"
-                  className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-slate-50 dark:text-slate-900"
+                  className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-emerald-500 dark:text-zinc-950"
                   disabled={busy}
                   onClick={createRequestFromIA}
                 >
@@ -465,7 +470,7 @@ export function IAModule({
             </div>
           ) : null}
 
-          <div className="mt-3 rounded-xl bg-white p-3 text-xs text-slate-600 dark:bg-slate-950 dark:text-slate-300 dark:border dark:border-slate-800">
+          <div className="mt-3 rounded-xl border border-zinc-200/70 bg-white/70 p-3 text-xs text-zinc-600 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-300">
             Próximo: acciones por intención (“muéstrame pendientes”, “carga un producto”, “crea una alerta”) con permisos server-side.
           </div>
         </section>
