@@ -1,10 +1,23 @@
 import { a, defineData, type ClientSchema } from '@aws-amplify/backend'
 import { analyzeAudio } from '../functions/analyze-audio/resource'
+import { chatAI } from '../functions/chat-ai/resource'
+import { secureOrders } from '../functions/secure-orders/resource'
 import { syncExternalData } from '../functions/sync-external-data/resource'
 
 const ADMIN_GROUPS = ['ADMIN', 'STAFF']
 
 const schema = a.schema({
+  /**
+   * Secuencias para numeración trazable (no reemplaza el id UUID).
+   * Ej: ORDER => 1,2,3...; REQUEST => 1,2,3...
+   */
+  Sequence: a
+    .model({
+      id: a.id(),
+      value: a.integer(),
+      updatedAt: a.datetime(),
+    })
+    .authorization((allow) => [allow.groups(ADMIN_GROUPS)]),
   /**
    * Perfil de usuario (no confundir con Cognito User).
    * Regla: el control fuerte de permisos se hace por grupos Cognito (ADMIN/STAFF)
@@ -24,6 +37,27 @@ const schema = a.schema({
       requests: a.hasMany('Request', 'createdByUserId'),
     })
     .authorization((allow) => [
+      allow.owner(),
+      allow.groups(ADMIN_GROUPS).to(['read']),
+    ]),
+
+  /**
+   * Perfil público (mínimo) para que otros usuarios vean quién subió un pendiente.
+   * Nota: algunos campos de contacto pueden ser necesarios para coordinar (ej. teléfono).
+   */
+  UserPublic: a
+    .model({
+      id: a.id(),
+      displayName: a.string().required(),
+      role: a.enum(['PRODUCTOR', 'TRANSPORTISTA', 'ADMIN', 'OPERADOR']),
+      municipio: a.string(),
+      vereda: a.string(),
+      phone: a.string(),
+      updatedAt: a.datetime(),
+    })
+    .secondaryIndexes((index) => [index('municipio').queryField('listPublicUsersByMunicipio')])
+    .authorization((allow) => [
+      allow.authenticated().to(['read']),
       allow.owner(),
       allow.groups(ADMIN_GROUPS).to(['read']),
     ]),
@@ -70,7 +104,9 @@ const schema = a.schema({
     })
     .secondaryIndexes((index) => [index('name').queryField('listProductsByName')])
     .authorization((allow) => [
-      allow.authenticated().to(['read']),
+      // MVP: permitir a cualquier usuario autenticado crear productos.
+      // Mantiene UPDATE/DELETE en ADMIN/STAFF.
+      allow.authenticated().to(['read', 'create']),
       allow.groups(ADMIN_GROUPS),
     ]),
 
@@ -158,6 +194,8 @@ const schema = a.schema({
   Order: a
     .model({
       userId: a.id(),
+      user: a.belongsTo('User', 'userId'),
+      orderNumber: a.integer(),
       product: a.string().required(),
       quantity: a.float().required(),
       unit: a.string(),
@@ -165,6 +203,8 @@ const schema = a.schema({
       municipio: a.string().required(),
       status: a.enum(['PENDIENTE', 'CONSOLIDADO', 'TRANSITO', 'ENTREGADO']),
       aiAnalysis: a.string(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
       tripId: a.id(),
       trip: a.belongsTo('Trip', 'tripId'),
     })
@@ -177,9 +217,39 @@ const schema = a.schema({
       allow.groups(ADMIN_GROUPS).to(['read']),
     ]),
 
+  /**
+   * Pendiente público (subset) para operación: lista por municipio sin exponer análisis/privado.
+   * Nota: aún no implementa un control estricto por municipio en server-side (fase 2 con claims).
+   */
+  OrderPublic: a
+    .model({
+      id: a.id(),
+      orderId: a.id().required(),
+      orderNumber: a.integer(),
+      createdByUserId: a.id().required(),
+      createdByName: a.string().required(),
+      municipio: a.string().required(),
+      pickupDate: a.date(),
+      product: a.string().required(),
+      quantity: a.float().required(),
+      unit: a.string(),
+      status: a.enum(['PENDIENTE', 'CONSOLIDADO', 'TRANSITO', 'ENTREGADO']),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .secondaryIndexes((index) => [
+      index('municipio').sortKeys(['pickupDate']).queryField('listPublicOrdersByMunicipioAndPickupDate'),
+      index('createdByUserId').queryField('listPublicOrdersByCreator'),
+    ])
+    .authorization((allow) => [
+      allow.owner(),
+      allow.groups(ADMIN_GROUPS),
+    ]),
+
   Trip: a
     .model({
       driverId: a.id(),
+      driver: a.belongsTo('User', 'driverId'),
       vehicleType: a.string(),
       capacityKg: a.integer(),
       currentLoadKg: a.integer(),
@@ -205,6 +275,7 @@ const schema = a.schema({
       createdByUserId: a.id().required(),
       createdBy: a.belongsTo('User', 'createdByUserId'),
       assignedToUserId: a.id(),
+      requestNumber: a.integer(),
       type: a.enum(['ROLE_CHANGE', 'PROVIDER_ONBOARDING', 'SUPPORT', 'DATA_FIX', 'OTHER']),
       status: a.enum(['OPEN', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'DONE']),
       title: a.string().required(),
@@ -215,6 +286,53 @@ const schema = a.schema({
     .secondaryIndexes((index) => [
       index('status').sortKeys(['type']).queryField('listRequestsByStatus'),
       index('createdByUserId').queryField('listRequestsByCreator'),
+    ])
+    .authorization((allow) => [
+      allow.owner(),
+      allow.groups(ADMIN_GROUPS),
+    ]),
+
+  /**
+   * Alertas operativas (campo / coordinación).
+   * MVP: cualquier autenticado puede leer; owner/admin pueden crear/editar.
+   */
+  Alert: a
+    .model({
+      createdByUserId: a.id().required(),
+      municipio: a.string(),
+      severity: a.enum(['INFO', 'WARNING', 'CRITICAL']),
+      status: a.enum(['OPEN', 'ACK', 'CLOSED']),
+      title: a.string().required(),
+      message: a.string(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .secondaryIndexes((index) => [
+      index('municipio').sortKeys(['createdAt']).queryField('listAlertsByMunicipio'),
+      index('createdByUserId').sortKeys(['createdAt']).queryField('listAlertsByCreator'),
+      index('status').sortKeys(['severity']).queryField('listAlertsByStatus'),
+    ])
+    .authorization((allow) => [
+      allow.authenticated().to(['read']),
+      allow.owner(),
+      allow.groups(ADMIN_GROUPS),
+    ]),
+
+  /**
+   * Notificaciones personales.
+   * Nota: en MVP se permiten self-notifications (owner create) para probar flujo.
+   */
+  Notification: a
+    .model({
+      userId: a.id().required(),
+      title: a.string().required(),
+      message: a.string(),
+      read: a.boolean(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .secondaryIndexes((index) => [
+      index('userId').sortKeys(['createdAt']).queryField('listNotificationsByUser'),
     ])
     .authorization((allow) => [
       allow.owner(),
@@ -304,6 +422,117 @@ const schema = a.schema({
     )
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(analyzeAudio)),
+
+  /**
+   * IA: chat / preguntas generales (texto -> respuesta)
+   * En el frontend: client.queries.askAI({ text })
+   */
+  askAI: a
+    .query()
+    .arguments({
+      text: a.string().required(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(chatAI)),
+
+  /**
+   * Seguridad municipio (server-side): lista pendientes públicos SOLO del municipio del caller.
+   * Fuente municipio: primero claim custom:municipio, si no existe cae a User.municipio.
+   */
+  listPublicOrdersForMyMunicipio: a
+    .query()
+    .arguments({
+      fromDate: a.string(),
+      toDate: a.string(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(secureOrders)),
+
+  /**
+   * CRUD remoto seguro: actualiza status en Order y OrderPublic a la vez.
+   */
+  updateOrderStatusSecure: a
+    .mutation()
+    .arguments({
+      orderId: a.id().required(),
+      status: a.string().required(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(secureOrders)),
+
+  /**
+   * CRUD remoto seguro: crea Order y OrderPublic en una operación.
+   * Reglas:
+   * - El caller debe tener municipio (claim custom:municipio o perfil User sincronizado)
+   * - No admin: solo puede crear en su propio municipio
+   */
+  createOrderSecure: a
+    .mutation()
+    .arguments({
+      product: a.string().required(),
+      quantity: a.float().required(),
+      unit: a.string(),
+      pickupDate: a.string(),
+      municipio: a.string().required(),
+      aiAnalysis: a.string(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(secureOrders)),
+
+  /**
+   * CRUD remoto seguro: actualiza campos editables en Order y OrderPublic.
+   * Reglas:
+   * - No admin: solo owner
+   * - No admin: municipio no puede cambiar a otro diferente al del caller
+   */
+  updateOrderSecure: a
+    .mutation()
+    .arguments({
+      orderId: a.id().required(),
+      product: a.string(),
+      quantity: a.float(),
+      unit: a.string(),
+      pickupDate: a.string(),
+      municipio: a.string(),
+      status: a.string(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(secureOrders)),
+
+  /**
+   * CRUD remoto seguro: borra Order y su OrderPublic correspondiente.
+   */
+  deleteOrderSecure: a
+    .mutation()
+    .arguments({
+      orderId: a.id().required(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(secureOrders)),
+
+  /**
+   * CRUD remoto seguro: crea Request con numeración trazable (requestNumber) server-side.
+   * - createdByUserId se toma del caller
+   * - status por defecto: OPEN
+   */
+  createRequestSecure: a
+    .mutation()
+    .arguments({
+      type: a.string().required(),
+      title: a.string().required(),
+      details: a.string(),
+      payloadJson: a.string(),
+      relatedOrderId: a.id(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(secureOrders)),
 })
 
 export type Schema = ClientSchema<typeof schema>

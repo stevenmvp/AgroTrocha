@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.amplify.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "types": ["node"],
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+
+    "strict": true,
+    "skipLibCheck": true,
+
+    "noEmit": true,
+    "composite": true
+  },
+  "include": ["amplify/**/*.ts"],
+  "exclude": ["amplify/**/node_modules/**", "dist/**", ".amplify/**"]
+}

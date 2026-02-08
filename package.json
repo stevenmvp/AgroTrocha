@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "ampx:sandbox": "npx ampx sandbox",
+    "ampx:sandbox": "ampx sandbox",
     "sync:outputs": "node scripts/sync-amplify-outputs.mjs",
     "dev:full": "node scripts/sync-amplify-outputs.mjs && vite",
+    "typecheck": "tsc -b --noEmit",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -15,12 +16,16 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.14.0",
     "@aws-sdk/client-bedrock-runtime": "^3.984.0",
+    "@aws-sdk/client-dynamodb": "^3.984.0",
+    "@aws-sdk/lib-dynamodb": "^3.984.0",
     "aws-amplify": "^6.16.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.20.0",
+    "@aws-amplify/backend-cli": "^1.8.2",
     "@eslint/js": "^9.39.1",
     "@types/aws-lambda": "^8.10.160",
     "@types/node": "^24.10.1",
