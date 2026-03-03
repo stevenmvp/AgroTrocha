@@ -123,10 +123,11 @@ export const handler: Schema['analyzeOrderFromText']['functionHandler'] = async 
 
   // Si no hay credenciales o acceso a Bedrock, devolvemos fallback.
   const modelId = process.env.BEDROCK_MODEL_ID
+  const bedrockRegion = process.env.BEDROCK_REGION || process.env.AWS_REGION || 'us-east-1'
   if (!modelId) return fallbackParse(text)
 
   try {
-    const client = new BedrockRuntimeClient({})
+    const client = new BedrockRuntimeClient({ region: bedrockRegion })
 
     // Claude on Bedrock usa un formato específico; lo mantenemos simple y robusto.
     const body = JSON.stringify({

@@ -34,12 +34,13 @@ export const handler: Schema['askAI']['functionHandler'] = async (event) => {
   if (!text) return 'Escribe tu pregunta para poder ayudarte.'
 
   const modelId = process.env.BEDROCK_MODEL_ID
+  const bedrockRegion = process.env.BEDROCK_REGION || process.env.AWS_REGION || 'us-east-1'
   if (!modelId) {
-    return 'IA no configurada. Puedes usar Pendientes y Perfil en modo local.'
+    return 'IA no configurada en backend. Contacta al administrador para activar Bedrock.'
   }
 
   try {
-    const client = new BedrockRuntimeClient({})
+    const client = new BedrockRuntimeClient({ region: bedrockRegion })
 
     const body = JSON.stringify({
       anthropic_version: 'bedrock-2023-05-31',

@@ -133,7 +133,7 @@ export function TopBar({
 
                 <div className="mt-2 space-y-2">
                   {!amplifyReady ? (
-                    <div className="text-sm text-zinc-600 dark:text-zinc-300">Modo local: sin notificaciones.</div>
+                    <div className="text-sm text-zinc-600 dark:text-zinc-300">Backend no disponible: sin notificaciones.</div>
                   ) : !isOnline ? (
                     <div className="text-sm text-zinc-600 dark:text-zinc-300">Offline: no se pueden cargar.</div>
                   ) : busy ? (

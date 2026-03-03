@@ -102,7 +102,7 @@ export function PerfilContent({
   }, [requests])
 
   const header = useMemo(() => {
-    if (!amplifyReady) return 'Modo local: el perfil se guarda en este dispositivo.'
+    if (!amplifyReady) return 'Backend no disponible: no se puede sincronizar el perfil.'
     return 'Backend listo: en el siguiente paso sincronizamos este perfil a Amplify Data.'
   }, [amplifyReady])
 

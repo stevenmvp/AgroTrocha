@@ -158,7 +158,7 @@ export function ReportesModule({
 
           {!canUseBackend ? (
             <div className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-              En modo local u offline no se puede cargar el resumen.
+              Sin conexión o backend no disponible: no se puede cargar el resumen.
             </div>
           ) : null}
         </Card>

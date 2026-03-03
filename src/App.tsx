@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { Schema } from '../amplify/data/resource'
+import { generateClient } from 'aws-amplify/api'
 import { type NavKey } from './components/BottomNav'
 import { Sidebar } from './components/Sidebar'
 import { TopBar } from './components/TopBar'
@@ -14,7 +16,13 @@ import { PendientesModule } from './modules/Pendientes'
 import { ProductosModule } from './modules/Productos'
 import { ReportesModule } from './modules/Reportes'
 import { SolicitudesModule } from './modules/Solicitudes'
+import { getErrorMessage } from './lib/getErrorMessage'
 import { loadSettings, saveSettings, type Density, type Theme } from './state/settings'
+
+type BackendHealth = {
+  status: 'checking' | 'ok' | 'offline' | 'error'
+  detail: string
+}
 
 type AppProps = {
   amplifyReady: boolean
@@ -26,6 +34,10 @@ type AppProps = {
 
 function App({ amplifyReady, auth }: AppProps) {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [backendHealth, setBackendHealth] = useState<BackendHealth>({
+    status: 'checking',
+    detail: 'Validando conexión al backend…',
+  })
   const [active, setActive] = useState<NavKey>('dashboard')
   const [toast, setToast] = useState<ToastState>(null)
   const [density, setDensity] = useState<Density>(() => loadSettings().density)
@@ -35,6 +47,73 @@ function App({ amplifyReady, auth }: AppProps) {
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    let timer: number | null = null
+
+    async function runHealthCheck() {
+      if (!isOnline) {
+        if (!cancelled) {
+          setBackendHealth({
+            status: 'offline',
+            detail: 'Sin internet. Trabajando en modo offline y reintento pendiente.',
+          })
+        }
+        return
+      }
+
+      if (!amplifyReady) {
+        if (!cancelled) {
+          setBackendHealth({
+            status: 'error',
+            detail: 'Amplify no está configurado correctamente.',
+          })
+        }
+        return
+      }
+
+      if (!cancelled) {
+        setBackendHealth({
+          status: 'checking',
+          detail: 'Verificando conexión con base de datos…',
+        })
+      }
+
+      try {
+        const client = generateClient<Schema>()
+        const result = await client.models.Country.list({ limit: 1 })
+        const resultErrors = (result as { errors?: unknown[] }).errors
+        if (Array.isArray(resultErrors) && resultErrors.length > 0) {
+          throw resultErrors[0]
+        }
+
+        if (!cancelled) {
+          setBackendHealth({
+            status: 'ok',
+            detail: 'Amplify y base de datos conectados.',
+          })
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setBackendHealth({
+            status: 'error',
+            detail: `Error backend: ${getErrorMessage(error)}`,
+          })
+        }
+      }
+    }
+
+    void runHealthCheck()
+    timer = window.setInterval(() => {
+      void runHealthCheck()
+    }, 60000)
+
+    return () => {
+      cancelled = true
+      if (timer !== null) window.clearInterval(timer)
+    }
+  }, [amplifyReady, isOnline])
 
   useEffect(() => {
     const root = document.documentElement
@@ -117,6 +196,7 @@ function App({ amplifyReady, auth }: AppProps) {
         onToggleCollapsed={() => setSidebarCollapsed((v) => !v)}
         mobileOpen={mobileSidebarOpen}
         onCloseMobile={() => setMobileSidebarOpen(false)}
+        backendHealth={backendHealth}
       />
 
       <div className="min-w-0 md:flex-1">

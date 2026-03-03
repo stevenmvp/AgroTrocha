@@ -66,7 +66,7 @@ function localReply(text: string) {
   if (lower.includes('impuesto') || lower.includes('iva')) {
     return 'Los impuestos están modelados (TaxCategory/TaxRate). Falta una pantalla admin para gestionarlos.'
   }
-  return 'Estoy en modo local. Cuando el backend esté listo, podrás chatear con IA usando Bedrock.'
+  return 'No pude usar IA del backend en este momento. Intenta de nuevo cuando tengas conexión estable.'
 }
 
 export function IAModule({
@@ -96,7 +96,7 @@ export function IAModule({
 
   const hint = useMemo(() => {
     if (!isOnline) return 'Offline: el chat se guarda local.'
-    if (!amplifyReady) return 'Sin backend: respuestas locales.'
+    if (!amplifyReady) return 'Backend no disponible: sin respuestas de IA.'
     return 'IA lista: consulta a Bedrock (cuando esté desplegado).'
   }, [amplifyReady, isOnline])
 

@@ -7,7 +7,12 @@ const destDir = path.join(root, 'public')
 const dest = path.join(destDir, 'amplify_outputs.json')
 
 if (!fs.existsSync(src)) {
-  console.log('[sync:outputs] amplify_outputs.json no existe (ok).')
+  const isCi = process.env.CI === 'true' || Boolean(process.env.AWS_BRANCH)
+  if (isCi) {
+    console.error('[sync:outputs] ERROR: amplify_outputs.json no existe en CI. Ejecuta pipeline-deploy antes del build frontend.')
+    process.exit(1)
+  }
+  console.log('[sync:outputs] amplify_outputs.json no existe en local. Ejecuta `npm run ampx:sandbox` y luego `npm run sync:outputs`.')
   process.exit(0)
 }
 

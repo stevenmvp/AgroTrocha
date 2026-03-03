@@ -1,6 +1,11 @@
 import { Amplify } from 'aws-amplify'
 
-export async function configureAmplifyFromPublicOutputs(): Promise<boolean> {
+export type AmplifyBootstrapResult = {
+  ok: boolean
+  error: string | null
+}
+
+export async function configureAmplifyFromPublicOutputs(): Promise<AmplifyBootstrapResult> {
   try {
     const candidates = [
       `${import.meta.env.BASE_URL ?? '/'}amplify_outputs.json`,
@@ -26,16 +31,21 @@ export async function configureAmplifyFromPublicOutputs(): Promise<boolean> {
 
         const outputs = (await resp.json()) as Record<string, unknown>
         Amplify.configure(outputs)
-        return true
+        return { ok: true, error: null }
       } catch (e) {
         lastError = e
       }
     }
 
-    if (lastError) console.warn('[amplify] No pude cargar outputs:', lastError)
-    return false
+    if (lastError) {
+      const message = lastError instanceof Error ? lastError.message : 'No pude cargar amplify_outputs.json.'
+      console.warn('[amplify] No pude cargar outputs:', lastError)
+      return { ok: false, error: message }
+    }
+    return { ok: false, error: 'No encontré amplify_outputs.json válido.' }
   } catch (e) {
     console.warn('[amplify] Error inesperado configurando Amplify:', e)
-    return false
+    const message = e instanceof Error ? e.message : 'Error inesperado al configurar Amplify.'
+    return { ok: false, error: message }
   }
 }

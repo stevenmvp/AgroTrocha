@@ -1,5 +1,10 @@
 import type { NavKey } from './BottomNav'
 
+type BackendHealth = {
+  status: 'checking' | 'ok' | 'offline' | 'error'
+  detail: string
+}
+
 type Tab = {
   key: NavKey
   label: string
@@ -34,6 +39,7 @@ export function Sidebar({
   onToggleCollapsed,
   mobileOpen,
   onCloseMobile,
+  backendHealth,
 }: {
   active: NavKey
   onChange: (key: NavKey) => void
@@ -41,7 +47,26 @@ export function Sidebar({
   onToggleCollapsed: () => void
   mobileOpen: boolean
   onCloseMobile: () => void
+  backendHealth: BackendHealth
 }) {
+  const statusTone =
+    backendHealth.status === 'ok'
+      ? 'border-emerald-200/80 bg-emerald-50/80 text-emerald-900 dark:border-emerald-800/60 dark:bg-emerald-900/20 dark:text-emerald-200'
+      : backendHealth.status === 'checking'
+        ? 'border-amber-200/80 bg-amber-50/80 text-amber-900 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-amber-200'
+        : backendHealth.status === 'offline'
+          ? 'border-zinc-200/80 bg-zinc-100/80 text-zinc-700 dark:border-zinc-800/60 dark:bg-zinc-900/40 dark:text-zinc-300'
+          : 'border-rose-200/80 bg-rose-50/80 text-rose-900 dark:border-rose-900/60 dark:bg-rose-900/20 dark:text-rose-200'
+
+  const dotTone =
+    backendHealth.status === 'ok'
+      ? 'bg-emerald-500'
+      : backendHealth.status === 'checking'
+        ? 'bg-amber-500'
+        : backendHealth.status === 'offline'
+          ? 'bg-zinc-500'
+          : 'bg-rose-500'
+
   const content = (
     <aside
       className={
@@ -92,6 +117,17 @@ export function Sidebar({
             </button>
           )
         })}
+
+        <div
+          className={'mt-auto rounded-xl border px-3 py-2 text-xs ' + statusTone}
+          title={backendHealth.detail}
+        >
+          <div className="flex items-center gap-2">
+            <span className={'h-2 w-2 rounded-full ' + dotTone} />
+            {!collapsed ? <span className="font-semibold">Estado backend</span> : null}
+          </div>
+          {!collapsed ? <div className="mt-1 line-clamp-3">{backendHealth.detail}</div> : null}
+        </div>
       </div>
     </aside>
   )

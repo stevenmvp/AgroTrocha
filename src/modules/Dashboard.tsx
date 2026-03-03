@@ -239,7 +239,7 @@ export function DashboardModule({
 
           {!canUseBackend ? (
             <div className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-              En modo local u offline no se puede cargar analítica.
+              Sin conexión o backend no disponible: no se puede cargar analítica.
             </div>
           ) : null}
         </Card>

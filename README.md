@@ -18,7 +18,22 @@ Comandos:
 - Sandbox: `npm run ampx:sandbox`
 - Sincronizar outputs a `public/` (para que el frontend los cargue en runtime): `npm run sync:outputs`
 
-Nota: la app intenta cargar `public/amplify_outputs.json` en runtime. Si no existe, corre en “modo local” (sin Auth).
+Requisito: la app necesita `public/amplify_outputs.json` para iniciar con backend completo (Auth + Data + Functions).
+
+Si se cae la red, la app sigue funcionando con su enfoque offline-first y cola local, y reintenta sincronizar al volver online.
+
+### Activar IA (Bedrock)
+- Las funciones IA son `chat-ai` y `analyze-audio`.
+- Variables por defecto en backend:
+	- `BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0`
+	- `BEDROCK_REGION=us-east-1`
+- En tu cuenta AWS debes habilitar acceso al modelo en Bedrock (Model access) para la región configurada.
+
+## Deploy en `main` (web + backend)
+- `amplify.yml` ejecuta backend primero con:
+	- `npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID`
+- Luego construye frontend y sincroniza `amplify_outputs.json`.
+- Si en CI no existe `amplify_outputs.json`, el build falla para evitar publicar una app sin backend.
 
 ## Roles / permisos
 - Modelos sensibles: owner-based + lectura operativa por grupos Cognito `ADMIN` y `STAFF`.

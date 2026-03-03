@@ -51,7 +51,7 @@ export function ConfigModule({
         </div>
 
         <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
-          {amplifyReady ? 'Backend listo.' : 'Modo local: sin Auth/backend.'}
+          {amplifyReady ? 'Backend listo.' : 'Backend no disponible.'}
         </div>
       </Card>
 
