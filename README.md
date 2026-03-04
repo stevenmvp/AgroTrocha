@@ -44,3 +44,15 @@ Si se cae la red, la app sigue funcionando con su enfoque offline-first y cola l
 
 ## Deploy (Amplify Hosting)
 Incluye `amplify.yml` con build de Vite (`dist/`). Al conectar el repo en Amplify Console, debería detectar el pipeline automáticamente.
+
+## Sonidos en terminal (exito/error)
+- Activar en la sesion actual:
+	- `source scripts/terminal-sounds.sh`
+- Para dejarlo permanente en bash, agrega en `~/.bashrc`:
+	- `source /workspaces/AgroTrocha/scripts/terminal-sounds.sh`
+- Sonidos:
+	- `1` beep cuando el comando termina bien.
+	- `2` beeps cuando termina con error.
+
+Si usas VS Code y no escuchas nada, habilita la campana del terminal:
+- Ajuste `Terminal > Integrated: Enable Bell` (`terminal.integrated.enableBell = true`).
