@@ -1,0 +1,162 @@
+[
+  {
+    "id": "trip-001",
+    "driverId": "usr-001",
+    "vehicleType": "TURBO",
+    "capacityKg": 8000,
+    "currentLoadKg": 1000,
+    "status": "PROGRAMADO"
+  },
+  {
+    "id": "trip-002",
+    "driverId": "usr-002",
+    "vehicleType": "SENCILLO",
+    "capacityKg": 8100,
+    "currentLoadKg": 1050,
+    "status": "EN_CARGA"
+  },
+  {
+    "id": "trip-003",
+    "driverId": "usr-003",
+    "vehicleType": "DOBLETROQUE",
+    "capacityKg": 8200,
+    "currentLoadKg": 1100,
+    "status": "VIAJANDO"
+  },
+  {
+    "id": "trip-004",
+    "driverId": "usr-004",
+    "vehicleType": "OTRO",
+    "capacityKg": 8300,
+    "currentLoadKg": 1150,
+    "status": "FINALIZADO"
+  },
+  {
+    "id": "trip-005",
+    "driverId": "usr-005",
+    "vehicleType": "TURBO",
+    "capacityKg": 8400,
+    "currentLoadKg": 1200,
+    "status": "PROGRAMADO"
+  },
+  {
+    "id": "trip-006",
+    "driverId": "usr-006",
+    "vehicleType": "SENCILLO",
+    "capacityKg": 8500,
+    "currentLoadKg": 1250,
+    "status": "EN_CARGA"
+  },
+  {
+    "id": "trip-007",
+    "driverId": "usr-007",
+    "vehicleType": "DOBLETROQUE",
+    "capacityKg": 8600,
+    "currentLoadKg": 1300,
+    "status": "VIAJANDO"
+  },
+  {
+    "id": "trip-008",
+    "driverId": "usr-008",
+    "vehicleType": "OTRO",
+    "capacityKg": 8700,
+    "currentLoadKg": 1350,
+    "status": "FINALIZADO"
+  },
+  {
+    "id": "trip-009",
+    "driverId": "usr-009",
+    "vehicleType": "TURBO",
+    "capacityKg": 8800,
+    "currentLoadKg": 1400,
+    "status": "PROGRAMADO"
+  },
+  {
+    "id": "trip-010",
+    "driverId": "usr-010",
+    "vehicleType": "SENCILLO",
+    "capacityKg": 8900,
+    "currentLoadKg": 1450,
+    "status": "EN_CARGA"
+  },
+  {
+    "id": "trip-011",
+    "driverId": "usr-011",
+    "vehicleType": "DOBLETROQUE",
+    "capacityKg": 9000,
+    "currentLoadKg": 1500,
+    "status": "VIAJANDO"
+  },
+  {
+    "id": "trip-012",
+    "driverId": "usr-012",
+    "vehicleType": "OTRO",
+    "capacityKg": 9100,
+    "currentLoadKg": 1550,
+    "status": "FINALIZADO"
+  },
+  {
+    "id": "trip-013",
+    "driverId": "usr-013",
+    "vehicleType": "TURBO",
+    "capacityKg": 9200,
+    "currentLoadKg": 1600,
+    "status": "PROGRAMADO"
+  },
+  {
+    "id": "trip-014",
+    "driverId": "usr-014",
+    "vehicleType": "SENCILLO",
+    "capacityKg": 9300,
+    "currentLoadKg": 1650,
+    "status": "EN_CARGA"
+  },
+  {
+    "id": "trip-015",
+    "driverId": "usr-015",
+    "vehicleType": "DOBLETROQUE",
+    "capacityKg": 9400,
+    "currentLoadKg": 1700,
+    "status": "VIAJANDO"
+  },
+  {
+    "id": "trip-016",
+    "driverId": "usr-016",
+    "vehicleType": "OTRO",
+    "capacityKg": 9500,
+    "currentLoadKg": 1750,
+    "status": "FINALIZADO"
+  },
+  {
+    "id": "trip-017",
+    "driverId": "usr-017",
+    "vehicleType": "TURBO",
+    "capacityKg": 9600,
+    "currentLoadKg": 1800,
+    "status": "PROGRAMADO"
+  },
+  {
+    "id": "trip-018",
+    "driverId": "usr-018",
+    "vehicleType": "SENCILLO",
+    "capacityKg": 9700,
+    "currentLoadKg": 1850,
+    "status": "EN_CARGA"
+  },
+  {
+    "id": "trip-019",
+    "driverId": "usr-019",
+    "vehicleType": "DOBLETROQUE",
+    "capacityKg": 9800,
+    "currentLoadKg": 1900,
+    "status": "VIAJANDO"
+  },
+  {
+    "id": "trip-020",
+    "driverId": "usr-020",
+    "vehicleType": "OTRO",
+    "capacityKg": 9900,
+    "currentLoadKg": 1950,
+    "status": "FINALIZADO"
+  }
+]

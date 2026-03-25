@@ -22,12 +22,10 @@ Requisito: la app necesita `public/amplify_outputs.json` para iniciar con backen
 
 Si se cae la red, la app sigue funcionando con su enfoque offline-first y cola local, y reintenta sincronizar al volver online.
 
-### Activar IA (Bedrock)
-- Las funciones IA son `chat-ai` y `analyze-audio`.
-- Variables por defecto en backend:
-	- `BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0`
-	- `BEDROCK_REGION=us-east-1`
-- En tu cuenta AWS debes habilitar acceso al modelo en Bedrock (Model access) para la región configurada.
+### Sincronización de precios (SISPA)
+- El flujo de precios usa la mutación `syncExternalApiNow`.
+- La API de referencia para semilla es `SISPA Precios Alimentos` en `public/seed-data/ExternalApi.json`.
+- La Lambda `sync-external-data` normaliza payloads heterogéneos y, si la fuente falla, crea datos fallback para no dejar la tabla vacía.
 
 ## Deploy en `main` (web + backend)
 - `amplify.yml` ejecuta backend primero con:

@@ -1,0 +1,222 @@
+[
+  {
+    "createdByUserId": "usr-001",
+    "assignedToUserId": "usr-002",
+    "requestNumber": 1,
+    "type": "ROLE_CHANGE",
+    "status": "OPEN",
+    "title": "Solicitud 1",
+    "details": "Detalle de solicitud de prueba 1",
+    "payloadJson": "{\"item\":1,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-001"
+  },
+  {
+    "createdByUserId": "usr-002",
+    "assignedToUserId": "usr-003",
+    "requestNumber": 2,
+    "type": "PROVIDER_ONBOARDING",
+    "status": "IN_REVIEW",
+    "title": "Solicitud 2",
+    "details": "Detalle de solicitud de prueba 2",
+    "payloadJson": "{\"item\":2,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-002"
+  },
+  {
+    "createdByUserId": "usr-003",
+    "assignedToUserId": "usr-004",
+    "requestNumber": 3,
+    "type": "SUPPORT",
+    "status": "APPROVED",
+    "title": "Solicitud 3",
+    "details": "Detalle de solicitud de prueba 3",
+    "payloadJson": "{\"item\":3,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-003"
+  },
+  {
+    "createdByUserId": "usr-004",
+    "assignedToUserId": "usr-005",
+    "requestNumber": 4,
+    "type": "DATA_FIX",
+    "status": "REJECTED",
+    "title": "Solicitud 4",
+    "details": "Detalle de solicitud de prueba 4",
+    "payloadJson": "{\"item\":4,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-004"
+  },
+  {
+    "createdByUserId": "usr-005",
+    "assignedToUserId": "usr-006",
+    "requestNumber": 5,
+    "type": "OTHER",
+    "status": "DONE",
+    "title": "Solicitud 5",
+    "details": "Detalle de solicitud de prueba 5",
+    "payloadJson": "{\"item\":5,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-005"
+  },
+  {
+    "createdByUserId": "usr-006",
+    "assignedToUserId": "usr-007",
+    "requestNumber": 6,
+    "type": "ROLE_CHANGE",
+    "status": "OPEN",
+    "title": "Solicitud 6",
+    "details": "Detalle de solicitud de prueba 6",
+    "payloadJson": "{\"item\":6,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-006"
+  },
+  {
+    "createdByUserId": "usr-007",
+    "assignedToUserId": "usr-008",
+    "requestNumber": 7,
+    "type": "PROVIDER_ONBOARDING",
+    "status": "IN_REVIEW",
+    "title": "Solicitud 7",
+    "details": "Detalle de solicitud de prueba 7",
+    "payloadJson": "{\"item\":7,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-007"
+  },
+  {
+    "createdByUserId": "usr-008",
+    "assignedToUserId": "usr-009",
+    "requestNumber": 8,
+    "type": "SUPPORT",
+    "status": "APPROVED",
+    "title": "Solicitud 8",
+    "details": "Detalle de solicitud de prueba 8",
+    "payloadJson": "{\"item\":8,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-008"
+  },
+  {
+    "createdByUserId": "usr-009",
+    "assignedToUserId": "usr-010",
+    "requestNumber": 9,
+    "type": "DATA_FIX",
+    "status": "REJECTED",
+    "title": "Solicitud 9",
+    "details": "Detalle de solicitud de prueba 9",
+    "payloadJson": "{\"item\":9,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-009"
+  },
+  {
+    "createdByUserId": "usr-010",
+    "assignedToUserId": "usr-011",
+    "requestNumber": 10,
+    "type": "OTHER",
+    "status": "DONE",
+    "title": "Solicitud 10",
+    "details": "Detalle de solicitud de prueba 10",
+    "payloadJson": "{\"item\":10,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-010"
+  },
+  {
+    "createdByUserId": "usr-011",
+    "assignedToUserId": "usr-012",
+    "requestNumber": 11,
+    "type": "ROLE_CHANGE",
+    "status": "OPEN",
+    "title": "Solicitud 11",
+    "details": "Detalle de solicitud de prueba 11",
+    "payloadJson": "{\"item\":11,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-011"
+  },
+  {
+    "createdByUserId": "usr-012",
+    "assignedToUserId": "usr-013",
+    "requestNumber": 12,
+    "type": "PROVIDER_ONBOARDING",
+    "status": "IN_REVIEW",
+    "title": "Solicitud 12",
+    "details": "Detalle de solicitud de prueba 12",
+    "payloadJson": "{\"item\":12,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-012"
+  },
+  {
+    "createdByUserId": "usr-013",
+    "assignedToUserId": "usr-014",
+    "requestNumber": 13,
+    "type": "SUPPORT",
+    "status": "APPROVED",
+    "title": "Solicitud 13",
+    "details": "Detalle de solicitud de prueba 13",
+    "payloadJson": "{\"item\":13,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-013"
+  },
+  {
+    "createdByUserId": "usr-014",
+    "assignedToUserId": "usr-015",
+    "requestNumber": 14,
+    "type": "DATA_FIX",
+    "status": "REJECTED",
+    "title": "Solicitud 14",
+    "details": "Detalle de solicitud de prueba 14",
+    "payloadJson": "{\"item\":14,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-014"
+  },
+  {
+    "createdByUserId": "usr-015",
+    "assignedToUserId": "usr-016",
+    "requestNumber": 15,
+    "type": "OTHER",
+    "status": "DONE",
+    "title": "Solicitud 15",
+    "details": "Detalle de solicitud de prueba 15",
+    "payloadJson": "{\"item\":15,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-015"
+  },
+  {
+    "createdByUserId": "usr-016",
+    "assignedToUserId": "usr-017",
+    "requestNumber": 16,
+    "type": "ROLE_CHANGE",
+    "status": "OPEN",
+    "title": "Solicitud 16",
+    "details": "Detalle de solicitud de prueba 16",
+    "payloadJson": "{\"item\":16,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-016"
+  },
+  {
+    "createdByUserId": "usr-017",
+    "assignedToUserId": "usr-018",
+    "requestNumber": 17,
+    "type": "PROVIDER_ONBOARDING",
+    "status": "IN_REVIEW",
+    "title": "Solicitud 17",
+    "details": "Detalle de solicitud de prueba 17",
+    "payloadJson": "{\"item\":17,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-017"
+  },
+  {
+    "createdByUserId": "usr-018",
+    "assignedToUserId": "usr-019",
+    "requestNumber": 18,
+    "type": "SUPPORT",
+    "status": "APPROVED",
+    "title": "Solicitud 18",
+    "details": "Detalle de solicitud de prueba 18",
+    "payloadJson": "{\"item\":18,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-018"
+  },
+  {
+    "createdByUserId": "usr-019",
+    "assignedToUserId": "usr-020",
+    "requestNumber": 19,
+    "type": "DATA_FIX",
+    "status": "REJECTED",
+    "title": "Solicitud 19",
+    "details": "Detalle de solicitud de prueba 19",
+    "payloadJson": "{\"item\":19,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-019"
+  },
+  {
+    "createdByUserId": "usr-020",
+    "assignedToUserId": "usr-001",
+    "requestNumber": 20,
+    "type": "OTHER",
+    "status": "DONE",
+    "title": "Solicitud 20",
+    "details": "Detalle de solicitud de prueba 20",
+    "payloadJson": "{\"item\":20,\"source\":\"seed\"}",
+    "relatedOrderId": "ord-020"
+  }
+]

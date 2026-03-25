@@ -1,0 +1,142 @@
+[
+  {
+    "id": "taxcat-001",
+    "countryCode": "C01",
+    "name": "Impuesto 1",
+    "type": "IVA",
+    "active": true
+  },
+  {
+    "id": "taxcat-002",
+    "countryCode": "C02",
+    "name": "Impuesto 2",
+    "type": "RETENCION",
+    "active": true
+  },
+  {
+    "id": "taxcat-003",
+    "countryCode": "C03",
+    "name": "Impuesto 3",
+    "type": "ICA",
+    "active": true
+  },
+  {
+    "id": "taxcat-004",
+    "countryCode": "C04",
+    "name": "Impuesto 4",
+    "type": "ARANCEL",
+    "active": true
+  },
+  {
+    "id": "taxcat-005",
+    "countryCode": "C05",
+    "name": "Impuesto 5",
+    "type": "OTRO",
+    "active": true
+  },
+  {
+    "id": "taxcat-006",
+    "countryCode": "C06",
+    "name": "Impuesto 6",
+    "type": "IVA",
+    "active": true
+  },
+  {
+    "id": "taxcat-007",
+    "countryCode": "C07",
+    "name": "Impuesto 7",
+    "type": "RETENCION",
+    "active": true
+  },
+  {
+    "id": "taxcat-008",
+    "countryCode": "C08",
+    "name": "Impuesto 8",
+    "type": "ICA",
+    "active": true
+  },
+  {
+    "id": "taxcat-009",
+    "countryCode": "C09",
+    "name": "Impuesto 9",
+    "type": "ARANCEL",
+    "active": true
+  },
+  {
+    "id": "taxcat-010",
+    "countryCode": "C10",
+    "name": "Impuesto 10",
+    "type": "OTRO",
+    "active": true
+  },
+  {
+    "id": "taxcat-011",
+    "countryCode": "C11",
+    "name": "Impuesto 11",
+    "type": "IVA",
+    "active": true
+  },
+  {
+    "id": "taxcat-012",
+    "countryCode": "C12",
+    "name": "Impuesto 12",
+    "type": "RETENCION",
+    "active": true
+  },
+  {
+    "id": "taxcat-013",
+    "countryCode": "C13",
+    "name": "Impuesto 13",
+    "type": "ICA",
+    "active": true
+  },
+  {
+    "id": "taxcat-014",
+    "countryCode": "C14",
+    "name": "Impuesto 14",
+    "type": "ARANCEL",
+    "active": true
+  },
+  {
+    "id": "taxcat-015",
+    "countryCode": "C15",
+    "name": "Impuesto 15",
+    "type": "OTRO",
+    "active": true
+  },
+  {
+    "id": "taxcat-016",
+    "countryCode": "C16",
+    "name": "Impuesto 16",
+    "type": "IVA",
+    "active": true
+  },
+  {
+    "id": "taxcat-017",
+    "countryCode": "C17",
+    "name": "Impuesto 17",
+    "type": "RETENCION",
+    "active": true
+  },
+  {
+    "id": "taxcat-018",
+    "countryCode": "C18",
+    "name": "Impuesto 18",
+    "type": "ICA",
+    "active": true
+  },
+  {
+    "id": "taxcat-019",
+    "countryCode": "C19",
+    "name": "Impuesto 19",
+    "type": "ARANCEL",
+    "active": true
+  },
+  {
+    "id": "taxcat-020",
+    "countryCode": "C20",
+    "name": "Impuesto 20",
+    "type": "OTRO",
+    "active": true
+  }
+]

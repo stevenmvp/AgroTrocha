@@ -13,6 +13,8 @@ type Tab = {
 const tabs: Tab[] = [
   { key: 'dashboard', label: 'Panel' },
   { key: 'reportes', label: 'Reportes' },
+  { key: 'tablas', label: 'Tablas' },
+  { key: 'cargas-json', label: 'Carga JSON' },
   { key: 'consolidaciones', label: 'Consolidaciones' },
   { key: 'pendientes', label: 'Pendientes' },
   { key: 'productos', label: 'Productos' },
@@ -20,7 +22,6 @@ const tabs: Tab[] = [
   { key: 'solicitudes', label: 'Solicitudes' },
   { key: 'alertas', label: 'Alertas' },
   { key: 'notificaciones', label: 'Notificaciones' },
-  { key: 'ia', label: 'IA' },
   { key: 'config', label: 'Config' },
 ]
 

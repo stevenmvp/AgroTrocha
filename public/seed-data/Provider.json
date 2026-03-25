@@ -1,0 +1,222 @@
+[
+  {
+    "id": "prv-001",
+    "name": "Proveedor 1",
+    "providerType": "TRANSPORTE",
+    "countryCode": "C01",
+    "municipio": "Municipio 1",
+    "contactName": "Contacto 1",
+    "phone": "3100000001",
+    "email": "proveedor1@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-002",
+    "name": "Proveedor 2",
+    "providerType": "COMPRADOR",
+    "countryCode": "C02",
+    "municipio": "Municipio 2",
+    "contactName": "Contacto 2",
+    "phone": "3100000002",
+    "email": "proveedor2@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-003",
+    "name": "Proveedor 3",
+    "providerType": "INSUMOS",
+    "countryCode": "C03",
+    "municipio": "Municipio 3",
+    "contactName": "Contacto 3",
+    "phone": "3100000003",
+    "email": "proveedor3@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-004",
+    "name": "Proveedor 4",
+    "providerType": "OTRO",
+    "countryCode": "C04",
+    "municipio": "Municipio 4",
+    "contactName": "Contacto 4",
+    "phone": "3100000004",
+    "email": "proveedor4@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-005",
+    "name": "Proveedor 5",
+    "providerType": "TRANSPORTE",
+    "countryCode": "C05",
+    "municipio": "Municipio 5",
+    "contactName": "Contacto 5",
+    "phone": "3100000005",
+    "email": "proveedor5@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-006",
+    "name": "Proveedor 6",
+    "providerType": "COMPRADOR",
+    "countryCode": "C06",
+    "municipio": "Municipio 6",
+    "contactName": "Contacto 6",
+    "phone": "3100000006",
+    "email": "proveedor6@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-007",
+    "name": "Proveedor 7",
+    "providerType": "INSUMOS",
+    "countryCode": "C07",
+    "municipio": "Municipio 7",
+    "contactName": "Contacto 7",
+    "phone": "3100000007",
+    "email": "proveedor7@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-008",
+    "name": "Proveedor 8",
+    "providerType": "OTRO",
+    "countryCode": "C08",
+    "municipio": "Municipio 8",
+    "contactName": "Contacto 8",
+    "phone": "3100000008",
+    "email": "proveedor8@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-009",
+    "name": "Proveedor 9",
+    "providerType": "TRANSPORTE",
+    "countryCode": "C09",
+    "municipio": "Municipio 9",
+    "contactName": "Contacto 9",
+    "phone": "3100000009",
+    "email": "proveedor9@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-010",
+    "name": "Proveedor 10",
+    "providerType": "COMPRADOR",
+    "countryCode": "C10",
+    "municipio": "Municipio 10",
+    "contactName": "Contacto 10",
+    "phone": "3100000010",
+    "email": "proveedor10@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-011",
+    "name": "Proveedor 11",
+    "providerType": "INSUMOS",
+    "countryCode": "C11",
+    "municipio": "Municipio 1",
+    "contactName": "Contacto 11",
+    "phone": "3100000011",
+    "email": "proveedor11@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-012",
+    "name": "Proveedor 12",
+    "providerType": "OTRO",
+    "countryCode": "C12",
+    "municipio": "Municipio 2",
+    "contactName": "Contacto 12",
+    "phone": "3100000012",
+    "email": "proveedor12@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-013",
+    "name": "Proveedor 13",
+    "providerType": "TRANSPORTE",
+    "countryCode": "C13",
+    "municipio": "Municipio 3",
+    "contactName": "Contacto 13",
+    "phone": "3100000013",
+    "email": "proveedor13@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-014",
+    "name": "Proveedor 14",
+    "providerType": "COMPRADOR",
+    "countryCode": "C14",
+    "municipio": "Municipio 4",
+    "contactName": "Contacto 14",
+    "phone": "3100000014",
+    "email": "proveedor14@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-015",
+    "name": "Proveedor 15",
+    "providerType": "INSUMOS",
+    "countryCode": "C15",
+    "municipio": "Municipio 5",
+    "contactName": "Contacto 15",
+    "phone": "3100000015",
+    "email": "proveedor15@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-016",
+    "name": "Proveedor 16",
+    "providerType": "OTRO",
+    "countryCode": "C16",
+    "municipio": "Municipio 6",
+    "contactName": "Contacto 16",
+    "phone": "3100000016",
+    "email": "proveedor16@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-017",
+    "name": "Proveedor 17",
+    "providerType": "TRANSPORTE",
+    "countryCode": "C17",
+    "municipio": "Municipio 7",
+    "contactName": "Contacto 17",
+    "phone": "3100000017",
+    "email": "proveedor17@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-018",
+    "name": "Proveedor 18",
+    "providerType": "COMPRADOR",
+    "countryCode": "C18",
+    "municipio": "Municipio 8",
+    "contactName": "Contacto 18",
+    "phone": "3100000018",
+    "email": "proveedor18@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-019",
+    "name": "Proveedor 19",
+    "providerType": "INSUMOS",
+    "countryCode": "C19",
+    "municipio": "Municipio 9",
+    "contactName": "Contacto 19",
+    "phone": "3100000019",
+    "email": "proveedor19@demo.com",
+    "active": true
+  },
+  {
+    "id": "prv-020",
+    "name": "Proveedor 20",
+    "providerType": "OTRO",
+    "countryCode": "C20",
+    "municipio": "Municipio 10",
+    "contactName": "Contacto 20",
+    "phone": "3100000020",
+    "email": "proveedor20@demo.com",
+    "active": true
+  }
+]

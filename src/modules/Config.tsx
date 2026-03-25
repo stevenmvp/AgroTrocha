@@ -96,7 +96,7 @@ export function ConfigModule({
 
       <Card className={density === 'compact' ? 'p-3' : 'p-4'}>
         <CardHeader
-          title="Voz (IA)"
+          title="Voz"
           subtitle="Flexibilidad: dictado (STT) y lectura en voz alta (TTS) si el navegador lo soporta."
         />
 
@@ -122,7 +122,7 @@ export function ConfigModule({
         <div className="mt-3 flex items-center justify-between gap-3">
           <div>
             <div className="text-sm font-semibold">Lectura</div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-300">Lee respuestas de la IA en voz alta.</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-300">Lee texto en voz alta usando el navegador.</div>
           </div>
           <button
             type="button"

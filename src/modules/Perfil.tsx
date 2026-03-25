@@ -246,19 +246,26 @@ export function PerfilContent({
 
     setBusy(true)
     try {
-      const current = await getCurrentUser()
       const client = generateClient<Schema>()
-      const created = await client.models.Request.create({
-        createdByUserId: current.userId,
+      const created = await client.mutations.createRequestSecure({
         type: reqType,
-        status: 'OPEN',
         title,
-        details,
+        details: details || undefined,
+        payloadJson: undefined,
       })
 
-      if (created.data?.id) {
+      const responseText = String(created.data ?? '')
+      let backendId: string | undefined
+      try {
+        const parsed = JSON.parse(responseText) as { requestId?: unknown }
+        if (typeof parsed.requestId === 'string') backendId = parsed.requestId
+      } catch {
+        // ignore parse errors
+      }
+
+      if (backendId) {
         setRequests((prev) =>
-          prev.map((r) => (r.id === local.id ? { ...r, backendId: created.data!.id } : r))
+          prev.map((r) => (r.id === local.id ? { ...r, backendId } : r))
         )
       }
       onToast({ kind: 'success', message: 'Solicitud creada en el backend.' })

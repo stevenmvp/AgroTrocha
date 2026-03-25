@@ -1,0 +1,202 @@
+[
+  {
+    "product": "Producto 1",
+    "countryCode": "C01",
+    "municipio": "Municipio 1",
+    "market": "Mercado 1",
+    "date": "2026-05-01",
+    "price": 1000,
+    "unit": "bultos",
+    "sourceApiId": "api-001"
+  },
+  {
+    "product": "Producto 2",
+    "countryCode": "C02",
+    "municipio": "Municipio 2",
+    "market": "Mercado 2",
+    "date": "2026-05-02",
+    "price": 1075,
+    "unit": "toneladas",
+    "sourceApiId": "api-002"
+  },
+  {
+    "product": "Producto 3",
+    "countryCode": "C03",
+    "municipio": "Municipio 3",
+    "market": "Mercado 3",
+    "date": "2026-05-03",
+    "price": 1150,
+    "unit": "cargas",
+    "sourceApiId": "api-003"
+  },
+  {
+    "product": "Producto 4",
+    "countryCode": "C04",
+    "municipio": "Municipio 4",
+    "market": "Mercado 4",
+    "date": "2026-05-04",
+    "price": 1225,
+    "unit": "kg",
+    "sourceApiId": "api-004"
+  },
+  {
+    "product": "Producto 5",
+    "countryCode": "C05",
+    "municipio": "Municipio 5",
+    "market": "Mercado 1",
+    "date": "2026-05-05",
+    "price": 1300,
+    "unit": "unidades",
+    "sourceApiId": "api-005"
+  },
+  {
+    "product": "Producto 6",
+    "countryCode": "C06",
+    "municipio": "Municipio 6",
+    "market": "Mercado 2",
+    "date": "2026-05-06",
+    "price": 1375,
+    "unit": "bultos",
+    "sourceApiId": "api-006"
+  },
+  {
+    "product": "Producto 7",
+    "countryCode": "C07",
+    "municipio": "Municipio 7",
+    "market": "Mercado 3",
+    "date": "2026-05-07",
+    "price": 1450,
+    "unit": "toneladas",
+    "sourceApiId": "api-007"
+  },
+  {
+    "product": "Producto 8",
+    "countryCode": "C08",
+    "municipio": "Municipio 8",
+    "market": "Mercado 4",
+    "date": "2026-05-08",
+    "price": 1525,
+    "unit": "cargas",
+    "sourceApiId": "api-008"
+  },
+  {
+    "product": "Producto 9",
+    "countryCode": "C09",
+    "municipio": "Municipio 9",
+    "market": "Mercado 1",
+    "date": "2026-05-09",
+    "price": 1600,
+    "unit": "kg",
+    "sourceApiId": "api-009"
+  },
+  {
+    "product": "Producto 10",
+    "countryCode": "C10",
+    "municipio": "Municipio 10",
+    "market": "Mercado 2",
+    "date": "2026-05-10",
+    "price": 1675,
+    "unit": "unidades",
+    "sourceApiId": "api-010"
+  },
+  {
+    "product": "Producto 11",
+    "countryCode": "C11",
+    "municipio": "Municipio 1",
+    "market": "Mercado 3",
+    "date": "2026-05-11",
+    "price": 1750,
+    "unit": "bultos",
+    "sourceApiId": "api-011"
+  },
+  {
+    "product": "Producto 12",
+    "countryCode": "C12",
+    "municipio": "Municipio 2",
+    "market": "Mercado 4",
+    "date": "2026-05-12",
+    "price": 1825,
+    "unit": "toneladas",
+    "sourceApiId": "api-012"
+  },
+  {
+    "product": "Producto 13",
+    "countryCode": "C13",
+    "municipio": "Municipio 3",
+    "market": "Mercado 1",
+    "date": "2026-05-13",
+    "price": 1900,
+    "unit": "cargas",
+    "sourceApiId": "api-013"
+  },
+  {
+    "product": "Producto 14",
+    "countryCode": "C14",
+    "municipio": "Municipio 4",
+    "market": "Mercado 2",
+    "date": "2026-05-14",
+    "price": 1975,
+    "unit": "kg",
+    "sourceApiId": "api-014"
+  },
+  {
+    "product": "Producto 15",
+    "countryCode": "C15",
+    "municipio": "Municipio 5",
+    "market": "Mercado 3",
+    "date": "2026-05-15",
+    "price": 2050,
+    "unit": "unidades",
+    "sourceApiId": "api-015"
+  },
+  {
+    "product": "Producto 16",
+    "countryCode": "C16",
+    "municipio": "Municipio 6",
+    "market": "Mercado 4",
+    "date": "2026-05-16",
+    "price": 2125,
+    "unit": "bultos",
+    "sourceApiId": "api-016"
+  },
+  {
+    "product": "Producto 17",
+    "countryCode": "C17",
+    "municipio": "Municipio 7",
+    "market": "Mercado 1",
+    "date": "2026-05-17",
+    "price": 2200,
+    "unit": "toneladas",
+    "sourceApiId": "api-017"
+  },
+  {
+    "product": "Producto 18",
+    "countryCode": "C18",
+    "municipio": "Municipio 8",
+    "market": "Mercado 2",
+    "date": "2026-05-18",
+    "price": 2275,
+    "unit": "cargas",
+    "sourceApiId": "api-018"
+  },
+  {
+    "product": "Producto 19",
+    "countryCode": "C19",
+    "municipio": "Municipio 9",
+    "market": "Mercado 3",
+    "date": "2026-05-19",
+    "price": 2350,
+    "unit": "kg",
+    "sourceApiId": "api-019"
+  },
+  {
+    "product": "Producto 20",
+    "countryCode": "C20",
+    "municipio": "Municipio 10",
+    "market": "Mercado 4",
+    "date": "2026-05-20",
+    "price": 2425,
+    "unit": "unidades",
+    "sourceApiId": "api-020"
+  }
+]

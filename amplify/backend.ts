@@ -1,18 +1,13 @@
 import { defineBackend } from '@aws-amplify/backend'
 import type { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda'
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import { auth } from './auth/resource'
 import { data } from './data/resource'
-import { analyzeAudio } from './functions/analyze-audio/resource'
-import { chatAI } from './functions/chat-ai/resource'
 import { secureOrders } from './functions/secure-orders/resource'
 import { syncExternalData } from './functions/sync-external-data/resource'
 
 const backend = defineBackend({
   auth,
   data,
-  analyzeAudio,
-  chatAI,
   secureOrders,
   syncExternalData,
 })
@@ -47,14 +42,22 @@ backend.data.resources.tables['User'].grantReadData(secureOrdersLambda)
 backend.data.resources.tables['Request'].grantReadWriteData(secureOrdersLambda)
 backend.data.resources.tables['Sequence'].grantReadWriteData(secureOrdersLambda)
 
-// Permisos Bedrock (InvokeModel) para IA.
-const chatLambda = backend.chatAI.resources.lambda as unknown as LambdaFunction
-const analyzeAudioLambda = backend.analyzeAudio.resources.lambda as unknown as LambdaFunction
+// Permisos/env para sincronización de datos externos (precios de mercado).
+const syncExternalDataLambda = backend.syncExternalData.resources.lambda as unknown as LambdaFunction
 
-const bedrockInvokePolicy = new PolicyStatement({
-  actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
-  resources: ['*'],
-})
+syncExternalDataLambda.addEnvironment(
+  'EXTERNAL_API_TABLE',
+  backend.data.resources.tables['ExternalApi'].tableName
+)
+syncExternalDataLambda.addEnvironment(
+  'EXTERNAL_SYNC_JOB_TABLE',
+  backend.data.resources.tables['ExternalSyncJob'].tableName
+)
+syncExternalDataLambda.addEnvironment(
+  'PRICE_REFERENCE_TABLE',
+  backend.data.resources.tables['PriceReference'].tableName
+)
 
-chatLambda.addToRolePolicy(bedrockInvokePolicy)
-analyzeAudioLambda.addToRolePolicy(bedrockInvokePolicy)
+backend.data.resources.tables['ExternalApi'].grantReadData(syncExternalDataLambda)
+backend.data.resources.tables['ExternalSyncJob'].grantReadWriteData(syncExternalDataLambda)
+backend.data.resources.tables['PriceReference'].grantReadWriteData(syncExternalDataLambda)

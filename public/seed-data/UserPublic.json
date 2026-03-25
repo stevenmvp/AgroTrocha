@@ -1,0 +1,182 @@
+[
+  {
+    "id": "usr-001",
+    "displayName": "Usuario 1",
+    "role": "PRODUCTOR",
+    "municipio": "Municipio 1",
+    "vereda": "Vereda 1",
+    "phone": "3000000001",
+    "updatedAt": "2026-03-01T10:00:00.000Z"
+  },
+  {
+    "id": "usr-002",
+    "displayName": "Usuario 2",
+    "role": "TRANSPORTISTA",
+    "municipio": "Municipio 2",
+    "vereda": "Vereda 2",
+    "phone": "3000000002",
+    "updatedAt": "2026-03-02T10:00:00.000Z"
+  },
+  {
+    "id": "usr-003",
+    "displayName": "Usuario 3",
+    "role": "ADMIN",
+    "municipio": "Municipio 3",
+    "vereda": "Vereda 3",
+    "phone": "3000000003",
+    "updatedAt": "2026-03-03T10:00:00.000Z"
+  },
+  {
+    "id": "usr-004",
+    "displayName": "Usuario 4",
+    "role": "OPERADOR",
+    "municipio": "Municipio 4",
+    "vereda": "Vereda 4",
+    "phone": "3000000004",
+    "updatedAt": "2026-03-04T10:00:00.000Z"
+  },
+  {
+    "id": "usr-005",
+    "displayName": "Usuario 5",
+    "role": "PRODUCTOR",
+    "municipio": "Municipio 5",
+    "vereda": "Vereda 5",
+    "phone": "3000000005",
+    "updatedAt": "2026-03-05T10:00:00.000Z"
+  },
+  {
+    "id": "usr-006",
+    "displayName": "Usuario 6",
+    "role": "TRANSPORTISTA",
+    "municipio": "Municipio 6",
+    "vereda": "Vereda 1",
+    "phone": "3000000006",
+    "updatedAt": "2026-03-06T10:00:00.000Z"
+  },
+  {
+    "id": "usr-007",
+    "displayName": "Usuario 7",
+    "role": "ADMIN",
+    "municipio": "Municipio 7",
+    "vereda": "Vereda 2",
+    "phone": "3000000007",
+    "updatedAt": "2026-03-07T10:00:00.000Z"
+  },
+  {
+    "id": "usr-008",
+    "displayName": "Usuario 8",
+    "role": "OPERADOR",
+    "municipio": "Municipio 8",
+    "vereda": "Vereda 3",
+    "phone": "3000000008",
+    "updatedAt": "2026-03-08T10:00:00.000Z"
+  },
+  {
+    "id": "usr-009",
+    "displayName": "Usuario 9",
+    "role": "PRODUCTOR",
+    "municipio": "Municipio 9",
+    "vereda": "Vereda 4",
+    "phone": "3000000009",
+    "updatedAt": "2026-03-09T10:00:00.000Z"
+  },
+  {
+    "id": "usr-010",
+    "displayName": "Usuario 10",
+    "role": "TRANSPORTISTA",
+    "municipio": "Municipio 10",
+    "vereda": "Vereda 5",
+    "phone": "3000000010",
+    "updatedAt": "2026-03-10T10:00:00.000Z"
+  },
+  {
+    "id": "usr-011",
+    "displayName": "Usuario 11",
+    "role": "ADMIN",
+    "municipio": "Municipio 1",
+    "vereda": "Vereda 1",
+    "phone": "3000000011",
+    "updatedAt": "2026-03-11T10:00:00.000Z"
+  },
+  {
+    "id": "usr-012",
+    "displayName": "Usuario 12",
+    "role": "OPERADOR",
+    "municipio": "Municipio 2",
+    "vereda": "Vereda 2",
+    "phone": "3000000012",
+    "updatedAt": "2026-03-12T10:00:00.000Z"
+  },
+  {
+    "id": "usr-013",
+    "displayName": "Usuario 13",
+    "role": "PRODUCTOR",
+    "municipio": "Municipio 3",
+    "vereda": "Vereda 3",
+    "phone": "3000000013",
+    "updatedAt": "2026-03-13T10:00:00.000Z"
+  },
+  {
+    "id": "usr-014",
+    "displayName": "Usuario 14",
+    "role": "TRANSPORTISTA",
+    "municipio": "Municipio 4",
+    "vereda": "Vereda 4",
+    "phone": "3000000014",
+    "updatedAt": "2026-03-14T10:00:00.000Z"
+  },
+  {
+    "id": "usr-015",
+    "displayName": "Usuario 15",
+    "role": "ADMIN",
+    "municipio": "Municipio 5",
+    "vereda": "Vereda 5",
+    "phone": "3000000015",
+    "updatedAt": "2026-03-15T10:00:00.000Z"
+  },
+  {
+    "id": "usr-016",
+    "displayName": "Usuario 16",
+    "role": "OPERADOR",
+    "municipio": "Municipio 6",
+    "vereda": "Vereda 1",
+    "phone": "3000000016",
+    "updatedAt": "2026-03-16T10:00:00.000Z"
+  },
+  {
+    "id": "usr-017",
+    "displayName": "Usuario 17",
+    "role": "PRODUCTOR",
+    "municipio": "Municipio 7",
+    "vereda": "Vereda 2",
+    "phone": "3000000017",
+    "updatedAt": "2026-03-17T10:00:00.000Z"
+  },
+  {
+    "id": "usr-018",
+    "displayName": "Usuario 18",
+    "role": "TRANSPORTISTA",
+    "municipio": "Municipio 8",
+    "vereda": "Vereda 3",
+    "phone": "3000000018",
+    "updatedAt": "2026-03-18T10:00:00.000Z"
+  },
+  {
+    "id": "usr-019",
+    "displayName": "Usuario 19",
+    "role": "ADMIN",
+    "municipio": "Municipio 9",
+    "vereda": "Vereda 4",
+    "phone": "3000000019",
+    "updatedAt": "2026-03-19T10:00:00.000Z"
+  },
+  {
+    "id": "usr-020",
+    "displayName": "Usuario 20",
+    "role": "OPERADOR",
+    "municipio": "Municipio 10",
+    "vereda": "Vereda 5",
+    "phone": "3000000020",
+    "updatedAt": "2026-03-20T10:00:00.000Z"
+  }
+]

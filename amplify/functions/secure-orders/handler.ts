@@ -40,7 +40,8 @@ function getGroups(identity: IdentityLike | undefined): string[] {
 
 function isAdmin(identity: IdentityLike | undefined): boolean {
   const groups = getGroups(identity)
-  return groups.includes('ADMIN') || groups.includes('STAFF')
+  const customRole = getStringClaim(identity, 'custom:role')?.toUpperCase() ?? ''
+  return groups.includes('ADMIN') || groups.includes('STAFF') || customRole === 'ADMIN'
 }
 
 function normalizeMunicipio(value: string): string {

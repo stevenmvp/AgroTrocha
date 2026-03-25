@@ -21,6 +21,7 @@ type RequestDraft = {
   type: (typeof TYPES)[number]
   title: string
   details?: string
+  payloadJson?: string
 }
 
 type RequestQueueItem = {
@@ -114,6 +115,7 @@ export function SolicitudesModule({
             type: item.payload.type,
             title: item.payload.title,
             details: item.payload.details,
+            payloadJson: item.payload.payloadJson,
           })
           if (cancelled) return
           setQueue((prev) => prev.filter((x) => x.id !== item.id))
@@ -171,7 +173,7 @@ export function SolicitudesModule({
       const item: RequestQueueItem = {
         id: makeId(),
         createdAt: new Date().toISOString(),
-        payload: { type, title: t, details: d || undefined },
+        payload: { type, title: t, details: d || undefined, payloadJson: undefined },
       }
       setQueue((prev) => [item, ...prev])
       setTitle('')
@@ -183,7 +185,12 @@ export function SolicitudesModule({
     setBusy(true)
     try {
       const client = generateClient<Schema>()
-      await client.mutations.createRequestSecure({ type, title: t, details: d || undefined })
+      await client.mutations.createRequestSecure({
+        type,
+        title: t,
+        details: d || undefined,
+        payloadJson: undefined,
+      })
       setTitle('')
       setDetails('')
       onToast({ kind: 'success', message: 'Solicitud creada.' })

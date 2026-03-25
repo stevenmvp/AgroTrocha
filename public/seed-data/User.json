@@ -1,0 +1,182 @@
+[
+  {
+    "id": "usr-001",
+    "name": "Usuario 1",
+    "role": "PRODUCTOR",
+    "countryCode": "C01",
+    "municipio": "Municipio 1",
+    "vereda": "Vereda 1",
+    "phone": "3000000001"
+  },
+  {
+    "id": "usr-002",
+    "name": "Usuario 2",
+    "role": "TRANSPORTISTA",
+    "countryCode": "C02",
+    "municipio": "Municipio 2",
+    "vereda": "Vereda 2",
+    "phone": "3000000002"
+  },
+  {
+    "id": "usr-003",
+    "name": "Usuario 3",
+    "role": "ADMIN",
+    "countryCode": "C03",
+    "municipio": "Municipio 3",
+    "vereda": "Vereda 3",
+    "phone": "3000000003"
+  },
+  {
+    "id": "usr-004",
+    "name": "Usuario 4",
+    "role": "OPERADOR",
+    "countryCode": "C04",
+    "municipio": "Municipio 4",
+    "vereda": "Vereda 4",
+    "phone": "3000000004"
+  },
+  {
+    "id": "usr-005",
+    "name": "Usuario 5",
+    "role": "PRODUCTOR",
+    "countryCode": "C05",
+    "municipio": "Municipio 5",
+    "vereda": "Vereda 5",
+    "phone": "3000000005"
+  },
+  {
+    "id": "usr-006",
+    "name": "Usuario 6",
+    "role": "TRANSPORTISTA",
+    "countryCode": "C06",
+    "municipio": "Municipio 6",
+    "vereda": "Vereda 1",
+    "phone": "3000000006"
+  },
+  {
+    "id": "usr-007",
+    "name": "Usuario 7",
+    "role": "ADMIN",
+    "countryCode": "C07",
+    "municipio": "Municipio 7",
+    "vereda": "Vereda 2",
+    "phone": "3000000007"
+  },
+  {
+    "id": "usr-008",
+    "name": "Usuario 8",
+    "role": "OPERADOR",
+    "countryCode": "C08",
+    "municipio": "Municipio 8",
+    "vereda": "Vereda 3",
+    "phone": "3000000008"
+  },
+  {
+    "id": "usr-009",
+    "name": "Usuario 9",
+    "role": "PRODUCTOR",
+    "countryCode": "C09",
+    "municipio": "Municipio 9",
+    "vereda": "Vereda 4",
+    "phone": "3000000009"
+  },
+  {
+    "id": "usr-010",
+    "name": "Usuario 10",
+    "role": "TRANSPORTISTA",
+    "countryCode": "C10",
+    "municipio": "Municipio 10",
+    "vereda": "Vereda 5",
+    "phone": "3000000010"
+  },
+  {
+    "id": "usr-011",
+    "name": "Usuario 11",
+    "role": "ADMIN",
+    "countryCode": "C11",
+    "municipio": "Municipio 1",
+    "vereda": "Vereda 1",
+    "phone": "3000000011"
+  },
+  {
+    "id": "usr-012",
+    "name": "Usuario 12",
+    "role": "OPERADOR",
+    "countryCode": "C12",
+    "municipio": "Municipio 2",
+    "vereda": "Vereda 2",
+    "phone": "3000000012"
+  },
+  {
+    "id": "usr-013",
+    "name": "Usuario 13",
+    "role": "PRODUCTOR",
+    "countryCode": "C13",
+    "municipio": "Municipio 3",
+    "vereda": "Vereda 3",
+    "phone": "3000000013"
+  },
+  {
+    "id": "usr-014",
+    "name": "Usuario 14",
+    "role": "TRANSPORTISTA",
+    "countryCode": "C14",
+    "municipio": "Municipio 4",
+    "vereda": "Vereda 4",
+    "phone": "3000000014"
+  },
+  {
+    "id": "usr-015",
+    "name": "Usuario 15",
+    "role": "ADMIN",
+    "countryCode": "C15",
+    "municipio": "Municipio 5",
+    "vereda": "Vereda 5",
+    "phone": "3000000015"
+  },
+  {
+    "id": "usr-016",
+    "name": "Usuario 16",
+    "role": "OPERADOR",
+    "countryCode": "C16",
+    "municipio": "Municipio 6",
+    "vereda": "Vereda 1",
+    "phone": "3000000016"
+  },
+  {
+    "id": "usr-017",
+    "name": "Usuario 17",
+    "role": "PRODUCTOR",
+    "countryCode": "C17",
+    "municipio": "Municipio 7",
+    "vereda": "Vereda 2",
+    "phone": "3000000017"
+  },
+  {
+    "id": "usr-018",
+    "name": "Usuario 18",
+    "role": "TRANSPORTISTA",
+    "countryCode": "C18",
+    "municipio": "Municipio 8",
+    "vereda": "Vereda 3",
+    "phone": "3000000018"
+  },
+  {
+    "id": "usr-019",
+    "name": "Usuario 19",
+    "role": "ADMIN",
+    "countryCode": "C19",
+    "municipio": "Municipio 9",
+    "vereda": "Vereda 4",
+    "phone": "3000000019"
+  },
+  {
+    "id": "usr-020",
+    "name": "Usuario 20",
+    "role": "OPERADOR",
+    "countryCode": "C20",
+    "municipio": "Municipio 10",
+    "vereda": "Vereda 5",
+    "phone": "3000000020"
+  }
+]

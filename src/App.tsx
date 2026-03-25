@@ -8,14 +8,15 @@ import { Toast, type ToastState } from './components/Toast'
 import { AlertasModule } from './modules/Alertas'
 import { ConsolidacionesModule } from './modules/Consolidaciones'
 import { ConfigModule } from './modules/Config'
+import { CargasJsonModule } from './modules/CargasJson'
 import { DashboardModule } from './modules/Dashboard'
-import { IAModule } from './modules/IA'
 import { MercadoModule } from './modules/Mercado'
 import { NotificacionesModule } from './modules/Notificaciones'
 import { PendientesModule } from './modules/Pendientes'
 import { ProductosModule } from './modules/Productos'
 import { ReportesModule } from './modules/Reportes'
 import { SolicitudesModule } from './modules/Solicitudes'
+import { TablasModule } from './modules/Tablas'
 import { getErrorMessage } from './lib/getErrorMessage'
 import { loadSettings, saveSettings, type Density, type Theme } from './state/settings'
 
@@ -138,6 +139,10 @@ function App({ amplifyReady, auth }: AppProps) {
         return 'Panel'
       case 'reportes':
         return 'Reportes'
+      case 'tablas':
+        return 'Tablas'
+      case 'cargas-json':
+        return 'Carga JSON'
       case 'consolidaciones':
         return 'Consolidaciones'
       case 'pendientes':
@@ -152,8 +157,6 @@ function App({ amplifyReady, auth }: AppProps) {
         return 'Alertas'
       case 'notificaciones':
         return 'Notificaciones'
-      case 'ia':
-        return 'IA'
       case 'config':
         return 'Configuración'
       default:
@@ -228,6 +231,24 @@ function App({ amplifyReady, auth }: AppProps) {
           />
         ) : null}
 
+        {active === 'tablas' ? (
+          <TablasModule
+            amplifyReady={amplifyReady}
+            isOnline={isOnline}
+            density={density}
+            onToast={(t) => setToast(t)}
+          />
+        ) : null}
+
+        {active === 'cargas-json' ? (
+          <CargasJsonModule
+            amplifyReady={amplifyReady}
+            isOnline={isOnline}
+            density={density}
+            onToast={(t) => setToast(t)}
+          />
+        ) : null}
+
         {active === 'consolidaciones' ? (
           <ConsolidacionesModule
             amplifyReady={amplifyReady}
@@ -294,16 +315,6 @@ function App({ amplifyReady, auth }: AppProps) {
             amplifyReady={amplifyReady}
             isOnline={isOnline}
             density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'ia' ? (
-          <IAModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            sttEnabled={sttEnabled}
-            ttsEnabled={ttsEnabled}
             onToast={(t) => setToast(t)}
           />
         ) : null}

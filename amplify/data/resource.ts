@@ -1,6 +1,4 @@
 import { a, defineData, type ClientSchema } from '@aws-amplify/backend'
-import { analyzeAudio } from '../functions/analyze-audio/resource'
-import { chatAI } from '../functions/chat-ai/resource'
 import { secureOrders } from '../functions/secure-orders/resource'
 import { syncExternalData } from '../functions/sync-external-data/resource'
 
@@ -398,43 +396,8 @@ const schema = a.schema({
       apiId: a.id().required(),
     })
     .returns(a.string())
-    .authorization((allow) => [allow.groups(ADMIN_GROUPS)])
+    .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(syncExternalData)),
-
-  /**
-   * IA: texto -> JSON estructurado
-   * En el frontend: client.queries.analyzeOrderFromText({ text })
-   */
-  analyzeOrderFromText: a
-    .query()
-    .arguments({
-      text: a.string().required(),
-    })
-    .returns(
-      a.customType({
-        product: a.string(),
-        quantity: a.float(),
-        unit: a.string(),
-        pickupDate: a.string(),
-        municipio: a.string(),
-        missing: a.string().array(),
-      })
-    )
-    .authorization((allow) => [allow.authenticated()])
-    .handler(a.handler.function(analyzeAudio)),
-
-  /**
-   * IA: chat / preguntas generales (texto -> respuesta)
-   * En el frontend: client.queries.askAI({ text })
-   */
-  askAI: a
-    .query()
-    .arguments({
-      text: a.string().required(),
-    })
-    .returns(a.string())
-    .authorization((allow) => [allow.authenticated()])
-    .handler(a.handler.function(chatAI)),
 
   /**
    * Seguridad municipio (server-side): lista pendientes públicos SOLO del municipio del caller.

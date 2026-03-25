@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 export type NavKey =
   | 'dashboard'
   | 'reportes'
+  | 'tablas'
+  | 'cargas-json'
   | 'consolidaciones'
   | 'pendientes'
   | 'productos'
@@ -10,7 +12,6 @@ export type NavKey =
   | 'solicitudes'
   | 'alertas'
   | 'notificaciones'
-  | 'ia'
   | 'config'
 
 type Tab = {
@@ -21,6 +22,8 @@ type Tab = {
 const tabs: Tab[] = [
   { key: 'dashboard', label: 'Panel' },
   { key: 'reportes', label: 'Reportes' },
+  { key: 'tablas', label: 'Tablas' },
+  { key: 'cargas-json', label: 'Carga JSON' },
   { key: 'consolidaciones', label: 'Consolid.' },
   { key: 'pendientes', label: 'Pendientes' },
   { key: 'productos', label: 'Productos' },
@@ -28,7 +31,6 @@ const tabs: Tab[] = [
   { key: 'solicitudes', label: 'Solicitudes' },
   { key: 'alertas', label: 'Alertas' },
   { key: 'notificaciones', label: 'Notifs' },
-  { key: 'ia', label: 'IA' },
   { key: 'config', label: 'Config' },
 ]
 
