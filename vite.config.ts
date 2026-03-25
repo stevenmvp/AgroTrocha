@@ -28,6 +28,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         navigateFallback: '/',
         globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,woff2}'],
         runtimeCaching: [
