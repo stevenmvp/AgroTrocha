@@ -1,30 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { Schema } from '../amplify/data/resource'
-import { generateClient } from 'aws-amplify/api'
-import { type NavKey } from './components/BottomNav'
-import { Sidebar } from './components/Sidebar'
-import { TopBar } from './components/TopBar'
+﻿import { useEffect, useState } from 'react'
 import { Toast, type ToastState } from './components/Toast'
-import { AlertasModule } from './modules/Alertas'
-import { ConsolidacionesModule } from './modules/Consolidaciones'
 import { ConfigModule } from './modules/Config'
-import { CargasJsonModule } from './modules/CargasJson'
-import { DashboardModule } from './modules/Dashboard'
-import { MercadoModule } from './modules/Mercado'
-import { NotificacionesModule } from './modules/Notificaciones'
-import { PendientesModule } from './modules/Pendientes'
-import { ProductosModule } from './modules/Productos'
-import { ReportesModule } from './modules/Reportes'
-import { SipsaModule } from './modules/SIPSA'
+import { PerfilModule } from './modules/Perfil'
 import { SolicitudesModule } from './modules/Solicitudes'
-import { TablasModule } from './modules/Tablas'
-import { getErrorMessage } from './lib/getErrorMessage'
-import { loadSettings, saveSettings, type Density, type Theme } from './state/settings'
+import { loadSettings, saveSettings, type Settings } from './state/settings'
 
-type BackendHealth = {
-  status: 'checking' | 'ok' | 'offline' | 'error'
-  detail: string
-}
+type Page = 'perfil' | 'solicitudes' | 'config'
 
 type AppProps = {
   amplifyReady: boolean
@@ -34,322 +15,105 @@ type AppProps = {
   }
 }
 
-function App({ amplifyReady, auth }: AppProps) {
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
-  const [backendHealth, setBackendHealth] = useState<BackendHealth>({
-    status: 'checking',
-    detail: 'Validando conexión al backend…',
-  })
-  const [active, setActive] = useState<NavKey>('dashboard')
+const labels: Record<Page, string> = {
+  perfil: 'Perfil',
+  solicitudes: 'Solicitudes',
+  config: 'Configuracion',
+}
+
+export default function App({ amplifyReady, auth }: AppProps) {
+  const [page, setPage] = useState<Page>('perfil')
   const [toast, setToast] = useState<ToastState>(null)
-  const [density, setDensity] = useState<Density>(() => loadSettings().density)
-  const [sttEnabled, setSttEnabled] = useState(() => loadSettings().sttEnabled)
-  const [ttsEnabled, setTtsEnabled] = useState(() => loadSettings().ttsEnabled)
-  const [theme, setTheme] = useState<Theme>(() => loadSettings().theme)
-
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    let timer: number | null = null
-
-    async function runHealthCheck() {
-      if (!isOnline) {
-        if (!cancelled) {
-          setBackendHealth({
-            status: 'offline',
-            detail: 'Sin internet. Trabajando en modo offline y reintento pendiente.',
-          })
-        }
-        return
-      }
-
-      if (!amplifyReady) {
-        if (!cancelled) {
-          setBackendHealth({
-            status: 'error',
-            detail: 'Amplify no está configurado correctamente.',
-          })
-        }
-        return
-      }
-
-      if (!cancelled) {
-        setBackendHealth({
-          status: 'checking',
-          detail: 'Verificando conexión con base de datos…',
-        })
-      }
-
-      try {
-        const client = generateClient<Schema>()
-        const result = await client.models.Country.list({ limit: 1 })
-        const resultErrors = (result as { errors?: unknown[] }).errors
-        if (Array.isArray(resultErrors) && resultErrors.length > 0) {
-          throw resultErrors[0]
-        }
-
-        if (!cancelled) {
-          setBackendHealth({
-            status: 'ok',
-            detail: 'Amplify y base de datos conectados.',
-          })
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setBackendHealth({
-            status: 'error',
-            detail: `Error backend: ${getErrorMessage(error)}`,
-          })
-        }
-      }
-    }
-
-    void runHealthCheck()
-    timer = window.setInterval(() => {
-      void runHealthCheck()
-    }, 60000)
-
-    return () => {
-      cancelled = true
-      if (timer !== null) window.clearInterval(timer)
-    }
-  }, [amplifyReady, isOnline])
-
-  useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'dark') root.classList.add('dark')
-    else root.classList.remove('dark')
-  }, [theme])
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [settings, setSettings] = useState<Settings>(() => loadSettings())
 
   useEffect(() => {
     const onOnline = () => setIsOnline(true)
     const onOffline = () => setIsOnline(false)
+
     window.addEventListener('online', onOnline)
     window.addEventListener('offline', onOffline)
+
     return () => {
       window.removeEventListener('online', onOnline)
       window.removeEventListener('offline', onOffline)
     }
   }, [])
 
-  const title = useMemo(() => {
-    switch (active) {
-      case 'dashboard':
-        return 'Panel'
-      case 'reportes':
-        return 'Reportes'
-      case 'tablas':
-        return 'Tablas'
-      case 'cargas-json':
-        return 'Carga JSON'
-      case 'consolidaciones':
-        return 'Consolidaciones'
-      case 'pendientes':
-        return 'Pendientes'
-      case 'productos':
-        return 'Productos'
-      case 'mercado':
-        return 'Mercado'
-      case 'sipsa':
-        return 'SIPSA'
-      case 'solicitudes':
-        return 'Solicitudes'
-      case 'alertas':
-        return 'Alertas'
-      case 'notificaciones':
-        return 'Notificaciones'
-      case 'config':
-        return 'Configuración'
-      default:
-        return 'AgroTrocha'
-    }
-  }, [active])
-
-  function onChangeDensity(next: Density) {
-    setDensity(next)
-    saveSettings({ density: next, sttEnabled, ttsEnabled, theme })
-    setToast({ kind: 'success', message: 'Configuración guardada.' })
-  }
-
-  function onChangeStt(next: boolean) {
-    setSttEnabled(next)
-    saveSettings({ density, sttEnabled: next, ttsEnabled, theme })
-    setToast({ kind: 'success', message: 'Configuración guardada.' })
-  }
-
-  function onChangeTts(next: boolean) {
-    setTtsEnabled(next)
-    saveSettings({ density, sttEnabled, ttsEnabled: next, theme })
-    setToast({ kind: 'success', message: 'Configuración guardada.' })
-  }
-
-  function onChangeTheme(next: Theme) {
-    setTheme(next)
-    saveSettings({ density, sttEnabled, ttsEnabled, theme: next })
-    setToast({ kind: 'success', message: 'Configuración guardada.' })
+  function updateSettings(next: Settings) {
+    setSettings(next)
+    saveSettings(next)
+    setToast({ kind: 'success', message: 'Configuracion guardada.' })
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 md:flex">
+    <div className="min-h-dvh bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
       <Toast toast={toast} onClear={() => setToast(null)} />
+      <header className="border-b border-zinc-200/70 bg-white/70 px-4 py-4 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">AgroTrocha</div>
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              {amplifyReady
+                ? isOnline
+                  ? 'Online · backend listo'
+                  : 'Offline · backend listo'
+                : 'Local · backend no listo'}
+            </div>
+          </div>
 
-      <Sidebar
-        active={active}
-        onChange={setActive}
-        collapsed={sidebarCollapsed}
-        onToggleCollapsed={() => setSidebarCollapsed((v) => !v)}
-        mobileOpen={mobileSidebarOpen}
-        onCloseMobile={() => setMobileSidebarOpen(false)}
-        backendHealth={backendHealth}
-      />
+          <div className="flex flex-wrap gap-2">
+            {(['perfil', 'solicitudes', 'config'] as Page[]).map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setPage(item)}
+                className={
+                  'rounded-2xl px-4 py-2 text-sm font-semibold transition ' +
+                  (page === item
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'border border-zinc-200/70 bg-white/80 text-zinc-800 hover:border-emerald-500 hover:text-emerald-700 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-200')
+                }
+              >
+                {labels[item]}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
 
-      <div className="min-w-0 md:flex-1">
-        <TopBar
-          title={title}
-          isOnline={isOnline}
-          amplifyReady={amplifyReady}
-          username={auth?.username ?? null}
-          onOpenSidebar={() => setMobileSidebarOpen(true)}
-          onGoNotifications={() => setActive('notificaciones')}
-        />
-
-        {active === 'dashboard' ? (
-          <DashboardModule
+      <main className="mx-auto max-w-6xl px-4 py-6">
+        {page === 'perfil' ? (
+          <PerfilModule
             amplifyReady={amplifyReady}
             isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'reportes' ? (
-          <ReportesModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-            onNavigate={(k) => setActive(k)}
-          />
-        ) : null}
-
-        {active === 'tablas' ? (
-          <TablasModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'cargas-json' ? (
-          <CargasJsonModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'consolidaciones' ? (
-          <ConsolidacionesModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-            onNavigate={(k) => setActive(k)}
-          />
-        ) : null}
-
-        {active === 'pendientes' ? (
-          <PendientesModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            sttEnabled={sttEnabled}
             username={auth?.username ?? null}
-            onToast={(t) => setToast(t)}
-            onNavigate={(k) => setActive(k)}
+            onToast={(next) => setToast(next)}
           />
         ) : null}
 
-        {active === 'productos' ? (
-          <ProductosModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-            onNavigate={(k) => setActive(k)}
-          />
+        {page === 'solicitudes' ? (
+          <SolicitudesModule amplifyReady={amplifyReady} isOnline={isOnline} onToast={(next) => setToast(next)} />
         ) : null}
 
-        {active === 'mercado' ? (
-          <MercadoModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-            onNavigate={(k) => setActive(k)}
-          />
-        ) : null}
-
-        {active === 'sipsa' ? (
-          <SipsaModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'solicitudes' ? (
-          <SolicitudesModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-            onNavigate={(k) => setActive(k)}
-          />
-        ) : null}
-
-        {active === 'alertas' ? (
-          <AlertasModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'notificaciones' ? (
-          <NotificacionesModule
-            amplifyReady={amplifyReady}
-            isOnline={isOnline}
-            density={density}
-            onToast={(t) => setToast(t)}
-          />
-        ) : null}
-
-        {active === 'config' ? (
+        {page === 'config' ? (
           <ConfigModule
-            density={density}
-            onChangeDensity={onChangeDensity}
-            sttEnabled={sttEnabled}
-            ttsEnabled={ttsEnabled}
-            onChangeStt={onChangeStt}
-            onChangeTts={onChangeTts}
-            theme={theme}
-            onChangeTheme={onChangeTheme}
-            username={auth?.username ?? null}
             amplifyReady={amplifyReady}
+            isOnline={isOnline}
+            username={auth?.username ?? null}
+            density={settings.density}
+            theme={settings.theme}
+            sttEnabled={settings.sttEnabled}
+            ttsEnabled={settings.ttsEnabled}
+            onChangeDensity={(next) => updateSettings({ ...settings, density: next })}
+            onChangeTheme={(next) => updateSettings({ ...settings, theme: next })}
+            onChangeStt={(next) => updateSettings({ ...settings, sttEnabled: next })}
+            onChangeTts={(next) => updateSettings({ ...settings, ttsEnabled: next })}
             signOut={auth?.signOut ?? null}
-            onToast={(t) => setToast(t)}
+            onToast={(next) => setToast(next)}
           />
         ) : null}
-      </div>
+      </main>
     </div>
   )
 }
-
-export default App
