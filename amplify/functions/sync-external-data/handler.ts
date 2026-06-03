@@ -4,10 +4,13 @@ import type { Schema } from '../../data/resource'
 // Keeps authorization behavior and returns a clear placeholder.
 
 export const handler: Schema['syncExternalApiNow']['functionHandler'] = async (event) => {
-  const identity = (event as any).identity as { claims?: Record<string, unknown> } | undefined
-  const groupsRaw = identity?.claims?.['cognito:groups']
+  const ev = event as unknown as Record<string, unknown> | null
+  const identity = (ev?.identity as Record<string, unknown> | undefined) ?? undefined
+  const claims = (identity?.claims as Record<string, unknown> | undefined) ?? undefined
+  const groupsRaw = claims?.['cognito:groups'] as unknown
+
   const groups = Array.isArray(groupsRaw)
-    ? groupsRaw.map(String)
+    ? groupsRaw.map((g) => String(g))
     : typeof groupsRaw === 'string'
     ? groupsRaw.split(',').map((s) => s.trim())
     : []
@@ -16,6 +19,7 @@ export const handler: Schema['syncExternalApiNow']['functionHandler'] = async (e
     throw new Error('Not authorized: requiere rol ADMIN/STAFF para ejecutar sync directo')
   }
 
-  const apiId = String((event as any).arguments?.apiId ?? 'unknown')
-  return { status: 'OK', message: `sync-external-data: noop for apiId=${apiId}` }
+  const args = (ev?.arguments as Record<string, unknown> | undefined) ?? undefined
+  const apiId = String(args?.apiId ?? 'unknown')
+  return `sync-external-data: noop for apiId=${apiId}`
 }
