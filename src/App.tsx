@@ -3,9 +3,10 @@ import { Toast, type ToastState } from './components/Toast'
 import { ConfigModule } from './modules/Config'
 import { PerfilModule } from './modules/Perfil'
 import { SolicitudesModule } from './modules/Solicitudes'
+import { PeticionesModule } from './modules/Peticiones'
 import { loadSettings, saveSettings, type Settings } from './state/settings'
 
-type Page = 'perfil' | 'solicitudes' | 'config'
+type Page = 'perfil' | 'peticiones' | 'solicitudes' | 'config'
 
 type AppProps = {
   amplifyReady: boolean
@@ -17,6 +18,7 @@ type AppProps = {
 
 const labels: Record<Page, string> = {
   perfil: 'Perfil',
+  peticiones: 'Peticiones',
   solicitudes: 'Solicitudes',
   config: 'Configuracion',
 }
@@ -53,17 +55,9 @@ export default function App({ amplifyReady, auth }: AppProps) {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">AgroTrocha</div>
-            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              {amplifyReady
-                ? isOnline
-                  ? 'Online · backend listo'
-                  : 'Offline · backend listo'
-                : 'Local · backend no listo'}
-            </div>
           </div>
-
           <div className="flex flex-wrap gap-2">
-            {(['perfil', 'solicitudes', 'config'] as Page[]).map((item) => (
+            {(['perfil', 'peticiones', 'solicitudes', 'config'] as Page[]).map((item) => (
               <button
                 key={item}
                 type="button"
@@ -92,8 +86,22 @@ export default function App({ amplifyReady, auth }: AppProps) {
           />
         ) : null}
 
+        {page === 'peticiones' ? (
+          <PeticionesModule
+            amplifyReady={amplifyReady}
+            isOnline={isOnline}
+            username={auth?.username ?? null}
+            onToast={(next) => setToast(next)}
+          />
+        ) : null}
+
         {page === 'solicitudes' ? (
-          <SolicitudesModule amplifyReady={amplifyReady} isOnline={isOnline} onToast={(next) => setToast(next)} />
+          <SolicitudesModule
+            amplifyReady={amplifyReady}
+            isOnline={isOnline}
+            username={auth?.username ?? null}
+            onToast={(next) => setToast(next)}
+          />
         ) : null}
 
         {page === 'config' ? (
