@@ -1,6 +1,3 @@
-import type { Schema } from '../../amplify/data/resource'
-import { generateClient } from 'aws-amplify/api'
-
 export type ParsedOrder = {
   product: string
   quantity: number
@@ -31,22 +28,5 @@ function parseOrderLocally(input: string): ParsedOrder | null {
 }
 
 export async function analyzeTextWithAI(text: string): Promise<ParsedOrder | null> {
-  try {
-    const client = generateClient<Schema>()
-    const resp = await client.queries.analyzeOrderFromText({ text })
-    const data = resp.data
-    if (!data || (Array.isArray(data.missing) && data.missing.length > 0)) {
-      return parseOrderLocally(text)
-    }
-    if (!data.product || !data.quantity || !data.municipio) return parseOrderLocally(text)
-    return {
-      product: data.product,
-      quantity: data.quantity,
-      unit: data.unit ?? undefined,
-      pickupDate: data.pickupDate ?? undefined,
-      municipio: data.municipio,
-    }
-  } catch {
-    return parseOrderLocally(text)
-  }
+  return parseOrderLocally(text)
 }

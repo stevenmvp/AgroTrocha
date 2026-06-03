@@ -1,0 +1,142 @@
+[
+  {
+    "countryCode": "C01",
+    "department": "Departamento 1",
+    "name": "Municipio 1",
+    "daneCode": "DANE0001",
+    "active": true
+  },
+  {
+    "countryCode": "C02",
+    "department": "Departamento 2",
+    "name": "Municipio 2",
+    "daneCode": "DANE0002",
+    "active": true
+  },
+  {
+    "countryCode": "C03",
+    "department": "Departamento 3",
+    "name": "Municipio 3",
+    "daneCode": "DANE0003",
+    "active": true
+  },
+  {
+    "countryCode": "C04",
+    "department": "Departamento 4",
+    "name": "Municipio 4",
+    "daneCode": "DANE0004",
+    "active": true
+  },
+  {
+    "countryCode": "C05",
+    "department": "Departamento 5",
+    "name": "Municipio 5",
+    "daneCode": "DANE0005",
+    "active": true
+  },
+  {
+    "countryCode": "C01",
+    "department": "Departamento 6",
+    "name": "Municipio 6",
+    "daneCode": "DANE0006",
+    "active": true
+  },
+  {
+    "countryCode": "C02",
+    "department": "Departamento 1",
+    "name": "Municipio 7",
+    "daneCode": "DANE0007",
+    "active": true
+  },
+  {
+    "countryCode": "C03",
+    "department": "Departamento 2",
+    "name": "Municipio 8",
+    "daneCode": "DANE0008",
+    "active": true
+  },
+  {
+    "countryCode": "C04",
+    "department": "Departamento 3",
+    "name": "Municipio 9",
+    "daneCode": "DANE0009",
+    "active": true
+  },
+  {
+    "countryCode": "C05",
+    "department": "Departamento 4",
+    "name": "Municipio 10",
+    "daneCode": "DANE0010",
+    "active": true
+  },
+  {
+    "countryCode": "C01",
+    "department": "Departamento 5",
+    "name": "Municipio 11",
+    "daneCode": "DANE0011",
+    "active": true
+  },
+  {
+    "countryCode": "C02",
+    "department": "Departamento 6",
+    "name": "Municipio 12",
+    "daneCode": "DANE0012",
+    "active": true
+  },
+  {
+    "countryCode": "C03",
+    "department": "Departamento 1",
+    "name": "Municipio 13",
+    "daneCode": "DANE0013",
+    "active": true
+  },
+  {
+    "countryCode": "C04",
+    "department": "Departamento 2",
+    "name": "Municipio 14",
+    "daneCode": "DANE0014",
+    "active": true
+  },
+  {
+    "countryCode": "C05",
+    "department": "Departamento 3",
+    "name": "Municipio 15",
+    "daneCode": "DANE0015",
+    "active": true
+  },
+  {
+    "countryCode": "C01",
+    "department": "Departamento 4",
+    "name": "Municipio 16",
+    "daneCode": "DANE0016",
+    "active": true
+  },
+  {
+    "countryCode": "C02",
+    "department": "Departamento 5",
+    "name": "Municipio 17",
+    "daneCode": "DANE0017",
+    "active": true
+  },
+  {
+    "countryCode": "C03",
+    "department": "Departamento 6",
+    "name": "Municipio 18",
+    "daneCode": "DANE0018",
+    "active": true
+  },
+  {
+    "countryCode": "C04",
+    "department": "Departamento 1",
+    "name": "Municipio 19",
+    "daneCode": "DANE0019",
+    "active": true
+  },
+  {
+    "countryCode": "C05",
+    "department": "Departamento 2",
+    "name": "Municipio 20",
+    "daneCode": "DANE0020",
+    "active": true
+  }
+]

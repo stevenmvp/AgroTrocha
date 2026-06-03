@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Producto 1",
+    "category": "Categoria 1",
+    "defaultUnit": "bultos",
+    "active": true
+  },
+  {
+    "name": "Producto 2",
+    "category": "Categoria 2",
+    "defaultUnit": "toneladas",
+    "active": true
+  },
+  {
+    "name": "Producto 3",
+    "category": "Categoria 3",
+    "defaultUnit": "cargas",
+    "active": true
+  },
+  {
+    "name": "Producto 4",
+    "category": "Categoria 4",
+    "defaultUnit": "kg",
+    "active": true
+  },
+  {
+    "name": "Producto 5",
+    "category": "Categoria 1",
+    "defaultUnit": "unidades",
+    "active": true
+  },
+  {
+    "name": "Producto 6",
+    "category": "Categoria 2",
+    "defaultUnit": "bultos",
+    "active": true
+  },
+  {
+    "name": "Producto 7",
+    "category": "Categoria 3",
+    "defaultUnit": "toneladas",
+    "active": true
+  },
+  {
+    "name": "Producto 8",
+    "category": "Categoria 4",
+    "defaultUnit": "cargas",
+    "active": true
+  },
+  {
+    "name": "Producto 9",
+    "category": "Categoria 1",
+    "defaultUnit": "kg",
+    "active": true
+  },
+  {
+    "name": "Producto 10",
+    "category": "Categoria 2",
+    "defaultUnit": "unidades",
+    "active": true
+  },
+  {
+    "name": "Producto 11",
+    "category": "Categoria 3",
+    "defaultUnit": "bultos",
+    "active": true
+  },
+  {
+    "name": "Producto 12",
+    "category": "Categoria 4",
+    "defaultUnit": "toneladas",
+    "active": true
+  },
+  {
+    "name": "Producto 13",
+    "category": "Categoria 1",
+    "defaultUnit": "cargas",
+    "active": true
+  },
+  {
+    "name": "Producto 14",
+    "category": "Categoria 2",
+    "defaultUnit": "kg",
+    "active": true
+  },
+  {
+    "name": "Producto 15",
+    "category": "Categoria 3",
+    "defaultUnit": "unidades",
+    "active": true
+  },
+  {
+    "name": "Producto 16",
+    "category": "Categoria 4",
+    "defaultUnit": "bultos",
+    "active": true
+  },
+  {
+    "name": "Producto 17",
+    "category": "Categoria 1",
+    "defaultUnit": "toneladas",
+    "active": true
+  },
+  {
+    "name": "Producto 18",
+    "category": "Categoria 2",
+    "defaultUnit": "cargas",
+    "active": true
+  },
+  {
+    "name": "Producto 19",
+    "category": "Categoria 3",
+    "defaultUnit": "kg",
+    "active": true
+  },
+  {
+    "name": "Producto 20",
+    "category": "Categoria 4",
+    "defaultUnit": "unidades",
+    "active": true
+  }
+]

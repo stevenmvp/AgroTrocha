@@ -1,0 +1,162 @@
+[
+  {
+    "userId": "usr-001",
+    "title": "Notificacion 1",
+    "message": "Mensaje de notificacion 1",
+    "read": true,
+    "createdAt": "2026-03-01T11:00:00.000Z",
+    "updatedAt": "2026-03-01T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-002",
+    "title": "Notificacion 2",
+    "message": "Mensaje de notificacion 2",
+    "read": false,
+    "createdAt": "2026-03-02T11:00:00.000Z",
+    "updatedAt": "2026-03-02T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-003",
+    "title": "Notificacion 3",
+    "message": "Mensaje de notificacion 3",
+    "read": true,
+    "createdAt": "2026-03-03T11:00:00.000Z",
+    "updatedAt": "2026-03-03T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-004",
+    "title": "Notificacion 4",
+    "message": "Mensaje de notificacion 4",
+    "read": false,
+    "createdAt": "2026-03-04T11:00:00.000Z",
+    "updatedAt": "2026-03-04T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-005",
+    "title": "Notificacion 5",
+    "message": "Mensaje de notificacion 5",
+    "read": true,
+    "createdAt": "2026-03-05T11:00:00.000Z",
+    "updatedAt": "2026-03-05T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-006",
+    "title": "Notificacion 6",
+    "message": "Mensaje de notificacion 6",
+    "read": false,
+    "createdAt": "2026-03-06T11:00:00.000Z",
+    "updatedAt": "2026-03-06T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-007",
+    "title": "Notificacion 7",
+    "message": "Mensaje de notificacion 7",
+    "read": true,
+    "createdAt": "2026-03-07T11:00:00.000Z",
+    "updatedAt": "2026-03-07T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-008",
+    "title": "Notificacion 8",
+    "message": "Mensaje de notificacion 8",
+    "read": false,
+    "createdAt": "2026-03-08T11:00:00.000Z",
+    "updatedAt": "2026-03-08T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-009",
+    "title": "Notificacion 9",
+    "message": "Mensaje de notificacion 9",
+    "read": true,
+    "createdAt": "2026-03-09T11:00:00.000Z",
+    "updatedAt": "2026-03-09T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-010",
+    "title": "Notificacion 10",
+    "message": "Mensaje de notificacion 10",
+    "read": false,
+    "createdAt": "2026-03-10T11:00:00.000Z",
+    "updatedAt": "2026-03-10T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-011",
+    "title": "Notificacion 11",
+    "message": "Mensaje de notificacion 11",
+    "read": true,
+    "createdAt": "2026-03-11T11:00:00.000Z",
+    "updatedAt": "2026-03-11T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-012",
+    "title": "Notificacion 12",
+    "message": "Mensaje de notificacion 12",
+    "read": false,
+    "createdAt": "2026-03-12T11:00:00.000Z",
+    "updatedAt": "2026-03-12T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-013",
+    "title": "Notificacion 13",
+    "message": "Mensaje de notificacion 13",
+    "read": true,
+    "createdAt": "2026-03-13T11:00:00.000Z",
+    "updatedAt": "2026-03-13T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-014",
+    "title": "Notificacion 14",
+    "message": "Mensaje de notificacion 14",
+    "read": false,
+    "createdAt": "2026-03-14T11:00:00.000Z",
+    "updatedAt": "2026-03-14T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-015",
+    "title": "Notificacion 15",
+    "message": "Mensaje de notificacion 15",
+    "read": true,
+    "createdAt": "2026-03-15T11:00:00.000Z",
+    "updatedAt": "2026-03-15T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-016",
+    "title": "Notificacion 16",
+    "message": "Mensaje de notificacion 16",
+    "read": false,
+    "createdAt": "2026-03-16T11:00:00.000Z",
+    "updatedAt": "2026-03-16T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-017",
+    "title": "Notificacion 17",
+    "message": "Mensaje de notificacion 17",
+    "read": true,
+    "createdAt": "2026-03-17T11:00:00.000Z",
+    "updatedAt": "2026-03-17T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-018",
+    "title": "Notificacion 18",
+    "message": "Mensaje de notificacion 18",
+    "read": false,
+    "createdAt": "2026-03-18T11:00:00.000Z",
+    "updatedAt": "2026-03-18T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-019",
+    "title": "Notificacion 19",
+    "message": "Mensaje de notificacion 19",
+    "read": true,
+    "createdAt": "2026-03-19T11:00:00.000Z",
+    "updatedAt": "2026-03-19T12:00:00.000Z"
+  },
+  {
+    "userId": "usr-020",
+    "title": "Notificacion 20",
+    "message": "Mensaje de notificacion 20",
+    "read": false,
+    "createdAt": "2026-03-20T11:00:00.000Z",
+    "updatedAt": "2026-03-20T12:00:00.000Z"
+  }
+]

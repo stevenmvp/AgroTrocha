@@ -1,333 +1,273 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/api'
-import { getCurrentUser } from 'aws-amplify/auth'
-import { Card, CardHeader } from '../components/ui/Card'
-import type { NavKey } from '../components/BottomNav'
-import { getErrorMessage } from '../lib/getErrorMessage'
-import { consumeNavIntent } from '../state/navIntent'
+import type { Schema } from '../../amplify/data/resource'
 
-const TYPES: Array<NonNullable<Schema['Request']['type']['type']>> = [
-  'ROLE_CHANGE',
-  'PROVIDER_ONBOARDING',
-  'SUPPORT',
-  'DATA_FIX',
-  'OTHER',
-]
-
-const STATUSES: Array<NonNullable<Schema['Request']['type']['status']>> = ['OPEN', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'DONE']
-
-type RequestDraft = {
-  type: (typeof TYPES)[number]
-  title: string
-  details?: string
-}
-
-type RequestQueueItem = {
+type RequestItem = {
   id: string
   createdAt: string
-  payload: RequestDraft
+  type: 'SUPPORT' | 'ROLE_CHANGE' | 'DATA_FIX' | 'OTHER'
+  title: string
+  details: string
+  status: 'OPEN' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'DONE'
+  sent: boolean
 }
 
-const REQ_QUEUE_KEY = 'agrotrocha.requestQueue.v1'
+const STORAGE_KEY = 'agrotrocha.requests.v1'
+const REQUEST_TYPES: RequestItem['type'][] = ['SUPPORT', 'ROLE_CHANGE', 'DATA_FIX', 'OTHER']
 
-function loadReqQueue(): RequestQueueItem[] {
+function loadRequests(): RequestItem[] {
   try {
-    const raw = localStorage.getItem(REQ_QUEUE_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
-    const parsed = JSON.parse(raw) as RequestQueueItem[]
-    return Array.isArray(parsed) ? parsed : []
+    const parsed = JSON.parse(raw) as RequestItem[]
+    return Array.isArray(parsed)
+      ? parsed.map((item) => ({
+          ...item,
+          type: REQUEST_TYPES.includes(item.type) ? item.type : 'SUPPORT',
+          status: ['OPEN', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'DONE'].includes(item.status)
+            ? item.status
+            : 'OPEN',
+        }))
+      : []
   } catch {
     return []
   }
 }
 
-function saveReqQueue(queue: RequestQueueItem[]) {
-  localStorage.setItem(REQ_QUEUE_KEY, JSON.stringify(queue))
+function saveRequests(requests: RequestItem[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests))
 }
 
-function makeId() {
-  return crypto.randomUUID()
-}
-
-export function SolicitudesModule({
-  amplifyReady,
-  isOnline,
-  density,
-  onToast,
-  onNavigate,
-}: {
+type SolicitudesModuleProps = {
   amplifyReady: boolean
   isOnline: boolean
-  density: 'compact' | 'comfortable'
-  onToast: (t: { kind: 'success' | 'error' | 'info'; message: string }) => void
-  onNavigate?: (key: NavKey) => void
-}) {
-  const [busy, setBusy] = useState(false)
-  const [items, setItems] = useState<Schema['Request']['type'][]>([])
+  onToast: (toast: { kind: 'success' | 'error' | 'info'; message: string }) => void
+}
 
-  const [queue, setQueue] = useState<RequestQueueItem[]>(() => loadReqQueue())
-  const [syncingQueue, setSyncingQueue] = useState(false)
-
-  const [q, setQ] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'ALL' | (typeof STATUSES)[number]>('ALL')
-  const [typeFilter, setTypeFilter] = useState<'ALL' | (typeof TYPES)[number]>('ALL')
-
-  const [type, setType] = useState<(typeof TYPES)[number]>('SUPPORT')
+export function SolicitudesModule({ amplifyReady, isOnline, onToast }: SolicitudesModuleProps) {
+  const [requests, setRequests] = useState<RequestItem[]>(() => loadRequests())
+  const [type, setType] = useState<RequestItem['type']>('SUPPORT')
   const [title, setTitle] = useState('')
   const [details, setDetails] = useState('')
+  const [busy, setBusy] = useState(false)
 
-  const [goToAfterCreate, setGoToAfterCreate] = useState<NavKey | null>(null)
-
-  const cardPad = density === 'compact' ? 'p-3' : 'p-4'
-  const canUseBackend = useMemo(() => amplifyReady && isOnline, [amplifyReady, isOnline])
+  const canSync = amplifyReady && isOnline
+  const pendingQueue = requests.filter((request) => !request.sent)
 
   useEffect(() => {
-    const intent = consumeNavIntent()
-    if (intent?.kind !== 'createRequest') return
+    saveRequests(requests)
+  }, [requests])
 
-    if (typeof intent.type === 'string' && TYPES.includes(intent.type as (typeof TYPES)[number])) {
-      setType(intent.type as (typeof TYPES)[number])
+  const statusSummary = useMemo(() => {
+    const open = requests.filter((item) => item.status === 'OPEN').length
+    const approved = requests.filter((item) => item.status === 'APPROVED').length
+    const rejected = requests.filter((item) => item.status === 'REJECTED').length
+    return `${open} abierto · ${approved} aprobadas · ${rejected} rechazadas`
+  }, [requests])
+
+  async function createRequest() {
+    const nextTitle = title.trim()
+    if (!nextTitle) {
+      onToast({ kind: 'error', message: 'El título es obligatorio.' })
+      return
     }
-    if (typeof intent.title === 'string') setTitle(intent.title)
-    if (typeof intent.details === 'string') setDetails(intent.details)
-    if (intent.goToAfterCreate) setGoToAfterCreate(intent.goToAfterCreate)
-  }, [])
 
-  useEffect(() => {
-    saveReqQueue(queue)
-  }, [queue])
+    const request: RequestItem = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      type,
+      title: nextTitle,
+      details: details.trim(),
+      status: 'OPEN',
+      sent: false,
+    }
 
-  useEffect(() => {
-    if (!canUseBackend) return
-    if (syncingQueue) return
-    if (queue.length === 0) return
+    setRequests((prev) => [request, ...prev])
+    setTitle('')
+    setDetails('')
 
-    let cancelled = false
-    setSyncingQueue(true)
-    ;(async () => {
-      try {
-        const client = generateClient<Schema>()
-        const toSend = queue.slice(0, 10)
-        for (const item of toSend) {
-          await client.mutations.createRequestSecure({
-            type: item.payload.type,
-            title: item.payload.title,
-            details: item.payload.details,
-          })
-          if (cancelled) return
-          setQueue((prev) => prev.filter((x) => x.id !== item.id))
-        }
-      } catch {
-        // keep queue; retry later
-      } finally {
-        if (!cancelled) setSyncingQueue(false)
+    if (!canSync) {
+      onToast({ kind: 'info', message: 'Solicitud guardada localmente y se enviará cuando haya conexión.' })
+      return
+    }
+
+    await sendRequestToBackend(request)
+  }
+
+  async function sendRequestToBackend(request: RequestItem) {
+    setBusy(true)
+    try {
+      const client = generateClient<Schema>()
+      const body = {
+        type: request.type,
+        title: request.title,
+        details: request.details || undefined,
+        payloadJson: undefined,
       }
-    })()
-
-    return () => {
-      cancelled = true
+      await client.mutations.createRequestSecure(body)
+      setRequests((prev) => prev.map((item) => (item.id === request.id ? { ...item, sent: true } : item)))
+      onToast({ kind: 'success', message: 'Solicitud enviada al backend.' })
+    } catch {
+      onToast({ kind: 'error', message: 'No se pudo enviar la solicitud al backend. Queda en cola.' })
+    } finally {
+      setBusy(false)
     }
-  }, [canUseBackend, syncingQueue, queue])
+  }
 
-  const filtered = useMemo(() => {
-    const query = q.trim().toLowerCase()
-    return (items ?? []).filter((r) => {
-      if (statusFilter !== 'ALL' && (r.status ?? 'OPEN') !== statusFilter) return false
-      if (typeFilter !== 'ALL' && (r.type ?? 'OTHER') !== typeFilter) return false
-      if (!query) return true
-      const hay = `${r.title ?? ''} ${r.details ?? ''} ${r.type ?? ''} ${r.status ?? ''}`.toLowerCase()
-      return hay.includes(query)
-    })
-  }, [items, q, statusFilter, typeFilter])
-
-  async function refreshMine() {
-    if (!canUseBackend) {
+  async function syncQueue() {
+    if (!canSync) {
       onToast({ kind: 'info', message: 'Necesitas estar online y con backend listo.' })
       return
     }
 
+    const queue = pendingQueue.slice(0, 10)
+    if (queue.length === 0) {
+      onToast({ kind: 'info', message: 'No hay solicitudes pendientes en cola.' })
+      return
+    }
+
     setBusy(true)
     try {
-      const current = await getCurrentUser()
-      const client = generateClient<Schema>()
-      const res = await client.models.Request.listRequestsByCreator({ createdByUserId: current.userId })
-      setItems(res.data ?? [])
-    } catch (e) {
-      onToast({ kind: 'error', message: `No pude cargar tus solicitudes: ${getErrorMessage(e)}` })
+      for (const request of queue) {
+        await sendRequestToBackend(request)
+      }
     } finally {
       setBusy(false)
     }
   }
 
-  async function create() {
-    const t = title.trim()
-    const d = details.trim()
-    if (!t) {
-      onToast({ kind: 'error', message: 'Título es requerido.' })
-      return
-    }
-    if (!canUseBackend) {
-      const item: RequestQueueItem = {
-        id: makeId(),
-        createdAt: new Date().toISOString(),
-        payload: { type, title: t, details: d || undefined },
-      }
-      setQueue((prev) => [item, ...prev])
-      setTitle('')
-      setDetails('')
-      onToast({ kind: 'info', message: 'Offline: solicitud guardada en cola y se enviará cuando haya conexión.' })
-      return
-    }
-
-    setBusy(true)
-    try {
-      const client = generateClient<Schema>()
-      await client.mutations.createRequestSecure({ type, title: t, details: d || undefined })
-      setTitle('')
-      setDetails('')
-      onToast({ kind: 'success', message: 'Solicitud creada.' })
-      await refreshMine()
-      if (goToAfterCreate && onNavigate) onNavigate(goToAfterCreate)
-      setGoToAfterCreate(null)
-    } catch (e) {
-      onToast({ kind: 'error', message: `No pude crear solicitud: ${getErrorMessage(e)}` })
-    } finally {
-      setBusy(false)
-    }
+  function updateStatus(id: string, nextStatus: RequestItem['status']) {
+    setRequests((prev) => prev.map((item) => (item.id === id ? { ...item, status: nextStatus } : item)))
+    onToast({ kind: 'success', message: `Solicitud marcada como ${nextStatus.toLowerCase()}.` })
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Card className={cardPad}>
-          <CardHeader
-            title="Mis solicitudes"
-            subtitle="Seguimiento de casos: soporte, cambios, correcciones."
-            right={
-              <button
-                type="button"
-                className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold disabled:opacity-60 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                onClick={refreshMine}
-                disabled={busy}
-              >
-                {busy ? 'Cargando…' : 'Actualizar'}
-              </button>
-            }
-          />
-
-          <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-3">
-            <input
-              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40 md:col-span-1"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar (título / detalle)…"
-            />
-            <select
-              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-            >
-              <option value="ALL">Estado: Todos</option>
-              {STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
-            >
-              <option value="ALL">Tipo: Todos</option>
-              {TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+    <div className="space-y-6">
+      <section className="rounded-3xl border border-zinc-200/70 bg-white/70 p-6 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
+        <div className="flex flex-col gap-2">
+          <div className="text-xl font-semibold">Solicitudes</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-300">
+            Crea solicitudes, guárdalas en modo offline y envíalas cuando tengas conexión.
           </div>
+        </div>
 
-          <div className="mt-3 space-y-2">
-            {filtered.map((r) => (
-              <div
-                key={r.id}
-                className="rounded-2xl border border-zinc-200/70 bg-white/60 p-3 text-sm dark:border-zinc-800/60 dark:bg-zinc-950/30"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="font-semibold">{r.title}</div>
-                  <div className="text-xs text-zinc-600 dark:text-zinc-300">{r.status ?? 'OPEN'}</div>
-                </div>
-                <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-                  {typeof (r as unknown as { requestNumber?: unknown }).requestNumber === 'number'
-                    ? `#${(r as unknown as { requestNumber: number }).requestNumber} · `
-                    : ''}
-                  Tipo: {r.type ?? 'OTHER'}
-                </div>
-                {r.details ? <div className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{r.details}</div> : null}
-              </div>
-            ))}
-            {filtered.length === 0 ? (
-              <div className="text-sm text-zinc-600 dark:text-zinc-300">Aún no tienes solicitudes.</div>
-            ) : null}
-          </div>
-
-          <div className="mt-3 text-xs text-zinc-600 dark:text-zinc-300">
-            Estados: {STATUSES.join(' · ')}
-          </div>
-        </Card>
-
-        <Card className={cardPad}>
-          <CardHeader title="Crear solicitud" subtitle={goToAfterCreate ? `Al crear: volver a ${goToAfterCreate}.` : undefined} />
-
-          <div className="mt-3 grid grid-cols-1 gap-3">
-            <label className="text-sm">
-              <div className="mb-1 font-medium">Tipo</div>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block">
+              <div className="text-sm font-semibold">Tipo</div>
               <select
-                className="w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
                 value={type}
-                onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
+                onChange={(e) => setType(e.target.value as RequestItem['type'])}
+                className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
               >
-                {TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                {REQUEST_TYPES.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
                   </option>
                 ))}
               </select>
             </label>
+          </div>
 
-            <label className="text-sm">
-              <div className="mb-1 font-medium">Título</div>
-              <input
-                className="w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ej: Necesito cambiar mi rol"
-              />
-            </label>
+          <div>
+            <div className="text-sm font-semibold">Estado</div>
+            <div className="mt-2 rounded-2xl border border-zinc-200/70 bg-zinc-50/80 px-3 py-3 text-sm text-zinc-700 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-200">
+              {statusSummary}
+            </div>
+          </div>
+        </div>
 
-            <label className="text-sm">
-              <div className="mb-1 font-medium">Detalles (opcional)</div>
-              <textarea
-                className="min-h-[96px] w-full resize-none rounded-2xl border border-zinc-200/70 bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                placeholder="Describe el caso para que te ayuden más rápido."
-              />
-            </label>
-
+        <div className="mt-6 space-y-4">
+          <label className="block">
+            <div className="text-sm font-semibold">Título</div>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Descripción breve"
+              className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
+            />
+          </label>
+          <label className="block">
+            <div className="text-sm font-semibold">Detalles</div>
+            <textarea
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              rows={4}
+              placeholder="Información adicional"
+              className="mt-2 w-full resize-none rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
+            />
+          </label>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
-              className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-emerald-500 dark:text-zinc-950"
-              onClick={create}
               disabled={busy}
+              onClick={createRequest}
+              className="rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-emerald-500 dark:text-zinc-950"
             >
-              {busy ? 'Guardando…' : 'Crear'}
+              {busy ? 'Procesando…' : 'Crear solicitud'}
+            </button>
+            <button
+              type="button"
+              disabled={!canSync || busy}
+              onClick={syncQueue}
+              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-emerald-500 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-70 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-200"
+            >
+              Enviar cola ({pendingQueue.length})
             </button>
           </div>
-        </Card>
-      </div>
-    </main>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-zinc-200/70 bg-white/70 p-6 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
+        <div className="flex flex-col gap-2">
+          <div className="text-xl font-semibold">Lista de solicitudes</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-300">
+            Revisa las solicitudes guardadas y cambia su estado localmente.
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-3">
+          {requests.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/80 p-4 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-950/20 dark:text-zinc-300">
+              No hay solicitudes registradas aún.
+            </div>
+          ) : (
+            requests.map((request) => (
+              <div
+                key={request.id}
+                className="rounded-2xl border border-zinc-200/70 bg-white/80 p-4 text-sm shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40"
+              >
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="text-base font-semibold">{request.title}</div>
+                    <div className="mt-1 text-xs uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400">
+                      {request.type} · {request.status} · {request.sent ? 'Enviado' : 'Pendiente'}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      className="rounded-2xl border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-300 dark:hover:bg-emerald-500/10"
+                      onClick={() => updateStatus(request.id, 'APPROVED')}
+                    >
+                      Aceptar
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-2xl border border-rose-600 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 dark:border-rose-500 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                      onClick={() => updateStatus(request.id, 'REJECTED')}
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+                {request.details ? <div className="mt-3 text-zinc-700 dark:text-zinc-300">{request.details}</div> : null}
+                <div className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Creada: {new Date(request.createdAt).toLocaleString()}</div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+    </div>
   )
 }

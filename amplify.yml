@@ -1,9 +1,17 @@
 version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - nvm install 20
+        - nvm use 20
+        - npm ci --include=dev
+        - npx ampx pipeline-deploy --branch "$AWS_BRANCH" --app-id "$AWS_APP_ID"
 frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - nvm use 20
         - npm run sync:outputs
     build:
       commands:

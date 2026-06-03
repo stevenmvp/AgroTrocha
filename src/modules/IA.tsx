@@ -92,8 +92,6 @@ export function IAModule({
   const [reqTitle, setReqTitle] = useState('')
   const [reqDetails, setReqDetails] = useState('')
 
-  const canUseBackend = amplifyReady && isOnline
-
   const hint = useMemo(() => {
     if (!isOnline) return 'Offline: el chat se guarda local.'
     if (!amplifyReady) return 'Sin backend: respuestas locales.'
@@ -280,23 +278,12 @@ export function IAModule({
 
     setBusy(true)
     try {
-      if (canUseBackend) {
-        const client = generateClient<Schema>()
-        const resp = await client.queries.askAI({ text })
-        const out = String(resp.data ?? '')
-        const assistantText = out || 'Sin respuesta'
-        push({ id: makeId(), role: 'assistant', text: assistantText, at: new Date().toISOString() })
-        speak(assistantText)
-      } else {
-        const assistantText = localReply(text)
-        push({ id: makeId(), role: 'assistant', text: assistantText, at: new Date().toISOString() })
-        speak(assistantText)
-      }
-    } catch (e) {
-      onToast({ kind: 'error', message: `No pude consultar la IA: ${getErrorMessage(e)}. Usando respuesta local.` })
+      // MVP: askAI no está disponible. Usar respuestas locales.
       const assistantText = localReply(text)
       push({ id: makeId(), role: 'assistant', text: assistantText, at: new Date().toISOString() })
       speak(assistantText)
+    } catch (e) {
+      onToast({ kind: 'error', message: `Error al procesar: ${getErrorMessage(e)}.` })
     } finally {
       setBusy(false)
     }

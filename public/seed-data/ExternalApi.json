@@ -1,0 +1,182 @@
+[
+  {
+    "id": "api-001",
+    "name": "SISPA Precios Alimentos",
+    "kind": "PRECIOS",
+    "baseUrl": "https://www.datos.gov.co/resource/mcec-87by.json?$limit=500",
+    "authType": "NONE",
+    "secretName": "",
+    "enabled": true
+  },
+  {
+    "id": "api-002",
+    "name": "API Externa 2",
+    "kind": "CLIMA",
+    "baseUrl": "https://api-demo-2.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_2",
+    "enabled": true
+  },
+  {
+    "id": "api-003",
+    "name": "API Externa 3",
+    "kind": "MAPAS",
+    "baseUrl": "https://api-demo-3.example.com",
+    "authType": "OAUTH2",
+    "secretName": "SECRET_3",
+    "enabled": true
+  },
+  {
+    "id": "api-004",
+    "name": "API Externa 4",
+    "kind": "IMPUESTOS",
+    "baseUrl": "https://api-demo-4.example.com",
+    "authType": "NONE",
+    "secretName": "SECRET_4",
+    "enabled": true
+  },
+  {
+    "id": "api-005",
+    "name": "API Externa 5",
+    "kind": "FLETES",
+    "baseUrl": "https://api-demo-5.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_5",
+    "enabled": true
+  },
+  {
+    "id": "api-006",
+    "name": "API Externa 6",
+    "kind": "OTRO",
+    "baseUrl": "https://api-demo-6.example.com",
+    "authType": "OAUTH2",
+    "secretName": "SECRET_6",
+    "enabled": true
+  },
+  {
+    "id": "api-007",
+    "name": "API Externa 7",
+    "kind": "PRECIOS",
+    "baseUrl": "https://api-demo-7.example.com",
+    "authType": "NONE",
+    "secretName": "SECRET_7",
+    "enabled": true
+  },
+  {
+    "id": "api-008",
+    "name": "API Externa 8",
+    "kind": "CLIMA",
+    "baseUrl": "https://api-demo-8.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_8",
+    "enabled": true
+  },
+  {
+    "id": "api-009",
+    "name": "API Externa 9",
+    "kind": "MAPAS",
+    "baseUrl": "https://api-demo-9.example.com",
+    "authType": "OAUTH2",
+    "secretName": "SECRET_9",
+    "enabled": true
+  },
+  {
+    "id": "api-010",
+    "name": "API Externa 10",
+    "kind": "IMPUESTOS",
+    "baseUrl": "https://api-demo-10.example.com",
+    "authType": "NONE",
+    "secretName": "SECRET_10",
+    "enabled": true
+  },
+  {
+    "id": "api-011",
+    "name": "API Externa 11",
+    "kind": "FLETES",
+    "baseUrl": "https://api-demo-11.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_11",
+    "enabled": true
+  },
+  {
+    "id": "api-012",
+    "name": "API Externa 12",
+    "kind": "OTRO",
+    "baseUrl": "https://api-demo-12.example.com",
+    "authType": "OAUTH2",
+    "secretName": "SECRET_12",
+    "enabled": true
+  },
+  {
+    "id": "api-013",
+    "name": "API Externa 13",
+    "kind": "PRECIOS",
+    "baseUrl": "https://api-demo-13.example.com",
+    "authType": "NONE",
+    "secretName": "SECRET_13",
+    "enabled": true
+  },
+  {
+    "id": "api-014",
+    "name": "API Externa 14",
+    "kind": "CLIMA",
+    "baseUrl": "https://api-demo-14.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_14",
+    "enabled": true
+  },
+  {
+    "id": "api-015",
+    "name": "API Externa 15",
+    "kind": "MAPAS",
+    "baseUrl": "https://api-demo-15.example.com",
+    "authType": "OAUTH2",
+    "secretName": "SECRET_15",
+    "enabled": true
+  },
+  {
+    "id": "api-016",
+    "name": "API Externa 16",
+    "kind": "IMPUESTOS",
+    "baseUrl": "https://api-demo-16.example.com",
+    "authType": "NONE",
+    "secretName": "SECRET_16",
+    "enabled": true
+  },
+  {
+    "id": "api-017",
+    "name": "API Externa 17",
+    "kind": "FLETES",
+    "baseUrl": "https://api-demo-17.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_17",
+    "enabled": true
+  },
+  {
+    "id": "api-018",
+    "name": "API Externa 18",
+    "kind": "OTRO",
+    "baseUrl": "https://api-demo-18.example.com",
+    "authType": "OAUTH2",
+    "secretName": "SECRET_18",
+    "enabled": true
+  },
+  {
+    "id": "api-019",
+    "name": "API Externa 19",
+    "kind": "PRECIOS",
+    "baseUrl": "https://api-demo-19.example.com",
+    "authType": "NONE",
+    "secretName": "SECRET_19",
+    "enabled": true
+  },
+  {
+    "id": "api-020",
+    "name": "API Externa 20",
+    "kind": "CLIMA",
+    "baseUrl": "https://api-demo-20.example.com",
+    "authType": "API_KEY",
+    "secretName": "SECRET_20",
+    "enabled": true
+  }
+]

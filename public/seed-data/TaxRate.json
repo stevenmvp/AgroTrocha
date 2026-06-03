@@ -1,0 +1,162 @@
+[
+  {
+    "categoryId": "taxcat-001",
+    "region": "Region 1",
+    "rate": 5,
+    "effectiveFrom": "2026-01-01",
+    "effectiveTo": "2027-12-01",
+    "notes": "Tarifa de prueba 1"
+  },
+  {
+    "categoryId": "taxcat-002",
+    "region": "Region 2",
+    "rate": 5.5,
+    "effectiveFrom": "2026-01-02",
+    "effectiveTo": "2027-12-02",
+    "notes": "Tarifa de prueba 2"
+  },
+  {
+    "categoryId": "taxcat-003",
+    "region": "Region 3",
+    "rate": 6,
+    "effectiveFrom": "2026-01-03",
+    "effectiveTo": "2027-12-03",
+    "notes": "Tarifa de prueba 3"
+  },
+  {
+    "categoryId": "taxcat-004",
+    "region": "Region 4",
+    "rate": 6.5,
+    "effectiveFrom": "2026-01-04",
+    "effectiveTo": "2027-12-04",
+    "notes": "Tarifa de prueba 4"
+  },
+  {
+    "categoryId": "taxcat-005",
+    "region": "Region 5",
+    "rate": 7,
+    "effectiveFrom": "2026-01-05",
+    "effectiveTo": "2027-12-05",
+    "notes": "Tarifa de prueba 5"
+  },
+  {
+    "categoryId": "taxcat-006",
+    "region": "Region 1",
+    "rate": 7.5,
+    "effectiveFrom": "2026-01-06",
+    "effectiveTo": "2027-12-06",
+    "notes": "Tarifa de prueba 6"
+  },
+  {
+    "categoryId": "taxcat-007",
+    "region": "Region 2",
+    "rate": 8,
+    "effectiveFrom": "2026-01-07",
+    "effectiveTo": "2027-12-07",
+    "notes": "Tarifa de prueba 7"
+  },
+  {
+    "categoryId": "taxcat-008",
+    "region": "Region 3",
+    "rate": 8.5,
+    "effectiveFrom": "2026-01-08",
+    "effectiveTo": "2027-12-08",
+    "notes": "Tarifa de prueba 8"
+  },
+  {
+    "categoryId": "taxcat-009",
+    "region": "Region 4",
+    "rate": 9,
+    "effectiveFrom": "2026-01-09",
+    "effectiveTo": "2027-12-09",
+    "notes": "Tarifa de prueba 9"
+  },
+  {
+    "categoryId": "taxcat-010",
+    "region": "Region 5",
+    "rate": 9.5,
+    "effectiveFrom": "2026-01-10",
+    "effectiveTo": "2027-12-10",
+    "notes": "Tarifa de prueba 10"
+  },
+  {
+    "categoryId": "taxcat-011",
+    "region": "Region 1",
+    "rate": 10,
+    "effectiveFrom": "2026-01-11",
+    "effectiveTo": "2027-12-11",
+    "notes": "Tarifa de prueba 11"
+  },
+  {
+    "categoryId": "taxcat-012",
+    "region": "Region 2",
+    "rate": 10.5,
+    "effectiveFrom": "2026-01-12",
+    "effectiveTo": "2027-12-12",
+    "notes": "Tarifa de prueba 12"
+  },
+  {
+    "categoryId": "taxcat-013",
+    "region": "Region 3",
+    "rate": 11,
+    "effectiveFrom": "2026-01-13",
+    "effectiveTo": "2027-12-13",
+    "notes": "Tarifa de prueba 13"
+  },
+  {
+    "categoryId": "taxcat-014",
+    "region": "Region 4",
+    "rate": 11.5,
+    "effectiveFrom": "2026-01-14",
+    "effectiveTo": "2027-12-14",
+    "notes": "Tarifa de prueba 14"
+  },
+  {
+    "categoryId": "taxcat-015",
+    "region": "Region 5",
+    "rate": 12,
+    "effectiveFrom": "2026-01-15",
+    "effectiveTo": "2027-12-15",
+    "notes": "Tarifa de prueba 15"
+  },
+  {
+    "categoryId": "taxcat-016",
+    "region": "Region 1",
+    "rate": 12.5,
+    "effectiveFrom": "2026-01-16",
+    "effectiveTo": "2027-12-16",
+    "notes": "Tarifa de prueba 16"
+  },
+  {
+    "categoryId": "taxcat-017",
+    "region": "Region 2",
+    "rate": 13,
+    "effectiveFrom": "2026-01-17",
+    "effectiveTo": "2027-12-17",
+    "notes": "Tarifa de prueba 17"
+  },
+  {
+    "categoryId": "taxcat-018",
+    "region": "Region 3",
+    "rate": 13.5,
+    "effectiveFrom": "2026-01-18",
+    "effectiveTo": "2027-12-18",
+    "notes": "Tarifa de prueba 18"
+  },
+  {
+    "categoryId": "taxcat-019",
+    "region": "Region 4",
+    "rate": 14,
+    "effectiveFrom": "2026-01-19",
+    "effectiveTo": "2027-12-19",
+    "notes": "Tarifa de prueba 19"
+  },
+  {
+    "categoryId": "taxcat-020",
+    "region": "Region 5",
+    "rate": 14.5,
+    "effectiveFrom": "2026-01-20",
+    "effectiveTo": "2027-12-20",
+    "notes": "Tarifa de prueba 20"
+  }
+]

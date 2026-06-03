@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { Schema } from '../../amplify/data/resource'
+import { useEffect, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
-import { getCurrentUser } from 'aws-amplify/auth'
+import type { Schema } from '../../amplify/data/resource'
 
-type ProfileDraft = {
+type Profile = {
   name: string
   phone: string
   municipio: string
@@ -11,13 +10,13 @@ type ProfileDraft = {
   role: 'PRODUCTOR' | 'TRANSPORTISTA'
 }
 
-const KEY = 'agrotrocha.profileDraft.v1'
+const STORAGE_KEY = 'agrotrocha.profile.v1'
 
-function loadDraft(): ProfileDraft {
+function loadProfile(): Profile {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return { name: '', phone: '', municipio: '', vereda: '', role: 'PRODUCTOR' }
-    const parsed = JSON.parse(raw) as Partial<ProfileDraft>
+    const parsed = JSON.parse(raw) as Partial<Profile>
     return {
       name: String(parsed.name ?? ''),
       phone: String(parsed.phone ?? ''),
@@ -30,421 +29,172 @@ function loadDraft(): ProfileDraft {
   }
 }
 
-function saveDraft(d: ProfileDraft) {
-  localStorage.setItem(KEY, JSON.stringify(d))
+function saveProfile(profile: Profile) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
 }
 
-type RequestDraft = {
-  id: string
-  createdAt: string
-  type: 'SUPPORT' | 'ROLE_CHANGE' | 'DATA_FIX' | 'OTHER'
-  title: string
-  details: string
-  status: 'OPEN' | 'DONE'
-  backendId?: string
-}
-
-const REQUESTS_KEY = 'agrotrocha.requests.v1'
-
-function loadRequestsLocal(): RequestDraft[] {
-  try {
-    const raw = localStorage.getItem(REQUESTS_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw) as RequestDraft[]
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-function saveRequestsLocal(next: RequestDraft[]) {
-  localStorage.setItem(REQUESTS_KEY, JSON.stringify(next))
-}
-
-function makeId() {
-  return crypto.randomUUID()
-}
-
-export function PerfilModule({
-  username,
-  amplifyReady,
-  onToast,
-}: {
+type PerfilModuleProps = {
   username: string | null
   amplifyReady: boolean
-  onToast: (t: { kind: 'success' | 'error' | 'info'; message: string }) => void
-}) {
-  return (
-    <main className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 md:max-w-3xl">
-      <PerfilContent username={username} amplifyReady={amplifyReady} onToast={onToast} />
-    </main>
-  )
+  isOnline: boolean
+  onToast: (toast: { kind: 'success' | 'error' | 'info'; message: string }) => void
 }
 
-export function PerfilContent({
-  username,
-  amplifyReady,
-  onToast,
-}: {
-  username: string | null
-  amplifyReady: boolean
-  onToast: (t: { kind: 'success' | 'error' | 'info'; message: string }) => void
-}) {
-  const [draft, setDraft] = useState<ProfileDraft>(() => loadDraft())
-  const [requests, setRequests] = useState<RequestDraft[]>(() => loadRequestsLocal())
-  const [reqType, setReqType] = useState<RequestDraft['type']>('SUPPORT')
-  const [reqTitle, setReqTitle] = useState('')
-  const [reqDetails, setReqDetails] = useState('')
+export function PerfilModule({ username, amplifyReady, isOnline, onToast }: PerfilModuleProps) {
+  const [profile, setProfile] = useState<Profile>(() => loadProfile())
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    saveRequestsLocal(requests)
-  }, [requests])
+    saveProfile(profile)
+  }, [profile])
 
-  const header = useMemo(() => {
-    if (!amplifyReady) return 'Modo local: el perfil se guarda en este dispositivo.'
-    return 'Backend listo: en el siguiente paso sincronizamos este perfil a Amplify Data.'
-  }, [amplifyReady])
+  const canSync = amplifyReady && isOnline && Boolean(username)
 
-  function update<K extends keyof ProfileDraft>(key: K, value: ProfileDraft[K]) {
-    setDraft((prev) => {
-      const next = { ...prev, [key]: value }
-      saveDraft(next)
-      return next
-    })
+  function updateField<K extends keyof Profile>(key: K, value: Profile[K]) {
+    setProfile((prev) => ({ ...prev, [key]: value }))
   }
 
-  function validateProfile() {
-    if (!draft.name.trim()) {
-      onToast({ kind: 'error', message: 'Nombre es requerido.' })
+  function validate() {
+    if (!profile.name.trim()) {
+      onToast({ kind: 'error', message: 'El nombre es obligatorio.' })
       return false
     }
-    if (!draft.municipio.trim()) {
-      onToast({ kind: 'error', message: 'Municipio es requerido.' })
+    if (!profile.municipio.trim()) {
+      onToast({ kind: 'error', message: 'El municipio es obligatorio.' })
       return false
     }
     return true
   }
 
-  async function onSaveProfileLocal() {
-    if (!validateProfile()) return
-    onToast({ kind: 'success', message: 'Perfil guardado (local).' })
-  }
-
-  async function onSyncProfileBackend() {
-    if (!validateProfile()) return
-    if (!amplifyReady) {
-      onToast({ kind: 'info', message: 'Backend no está listo.' })
+  async function syncProfile() {
+    if (!validate()) return
+    if (!canSync) {
+      onToast({ kind: 'info', message: 'Debes estar online y autenticado para sincronizar.' })
       return
     }
 
     setBusy(true)
     try {
-      const current = await getCurrentUser()
       const client = generateClient<Schema>()
-
-      // Usamos el sub como id para que sea fácil de recuperar.
-      const id = current.userId
-
-      // Intento upsert (get -> update, si no existe -> create)
-      try {
-        const existing = await client.models.User.get({ id })
-        if (existing.data) {
-          await client.models.User.update({
-            id,
-            name: draft.name,
-            role: draft.role,
-            countryCode: 'CO',
-            municipio: draft.municipio,
-            vereda: draft.vereda,
-            phone: draft.phone,
-          })
-        } else {
-          await client.models.User.create({
-            id,
-            name: draft.name,
-            role: draft.role,
-            countryCode: 'CO',
-            municipio: draft.municipio,
-            vereda: draft.vereda,
-            phone: draft.phone,
-          })
-        }
-      } catch {
-        await client.models.User.create({
-          id,
-          name: draft.name,
-          role: draft.role,
-          countryCode: 'CO',
-          municipio: draft.municipio,
-          vereda: draft.vereda,
-          phone: draft.phone,
-        })
+      const userId = username ?? ''
+      const existing = await client.models.User.get({ id: userId })
+      const payload = {
+        id: userId,
+        name: profile.name,
+        phone: profile.phone,
+        municipio: profile.municipio,
+        vereda: profile.vereda,
+        role: profile.role,
+        countryCode: 'CO',
       }
 
-      onToast({ kind: 'success', message: 'Perfil sincronizado al backend.' })
-
-      // Public profile (mínimo) para trazabilidad.
-      try {
-        await client.models.UserPublic.create({
-          id,
-          displayName: draft.name,
-          role: draft.role,
-          municipio: draft.municipio,
-          vereda: draft.vereda,
-          phone: draft.phone,
-          updatedAt: new Date().toISOString(),
-        })
-      } catch {
-        try {
-          await client.models.UserPublic.update({
-            id,
-            displayName: draft.name,
-            role: draft.role,
-            municipio: draft.municipio,
-            vereda: draft.vereda,
-            phone: draft.phone,
-            updatedAt: new Date().toISOString(),
-          })
-        } catch {
-          // ignore
-        }
+      if (existing?.data) {
+        await client.models.User.update(payload)
+      } else {
+        await client.models.User.create(payload)
       }
-    } catch {
-      onToast({ kind: 'error', message: 'No pude sincronizar el perfil.' })
+
+      onToast({ kind: 'success', message: 'Perfil sincronizado con el backend.' })
+    } catch (error) {
+      console.error('Perfil sync error:', error)
+      onToast({ kind: 'error', message: 'No se pudo sincronizar el perfil.' })
     } finally {
       setBusy(false)
     }
-  }
-
-  async function onCreateRequest() {
-    const title = reqTitle.trim()
-    const details = reqDetails.trim()
-    if (!title) {
-      onToast({ kind: 'error', message: 'Título es requerido.' })
-      return
-    }
-
-    const local: RequestDraft = {
-      id: makeId(),
-      createdAt: new Date().toISOString(),
-      type: reqType,
-      title,
-      details,
-      status: 'OPEN',
-    }
-
-    // Guardamos local siempre (offline-first)
-    setRequests((prev) => [local, ...prev])
-    setReqTitle('')
-    setReqDetails('')
-
-    if (!amplifyReady || !navigator.onLine) {
-      onToast({ kind: 'success', message: 'Solicitud guardada (local).' })
-      return
-    }
-
-    setBusy(true)
-    try {
-      const current = await getCurrentUser()
-      const client = generateClient<Schema>()
-      const created = await client.models.Request.create({
-        createdByUserId: current.userId,
-        type: reqType,
-        status: 'OPEN',
-        title,
-        details,
-      })
-
-      if (created.data?.id) {
-        setRequests((prev) =>
-          prev.map((r) => (r.id === local.id ? { ...r, backendId: created.data!.id } : r))
-        )
-      }
-      onToast({ kind: 'success', message: 'Solicitud creada en el backend.' })
-    } catch {
-      onToast({ kind: 'info', message: 'No pude sincronizar solicitud; queda local.' })
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  function deleteRequestLocal(id: string) {
-    setRequests((prev) => prev.filter((r) => r.id !== id))
-    onToast({ kind: 'success', message: 'Solicitud eliminada (local).' })
   }
 
   return (
-    <>
-      <section className="rounded-2xl border border-zinc-200/70 bg-white/70 p-4 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
-        <h2 className="text-base font-semibold">Mi perfil</h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{header}</p>
-
-        <div className="mt-3 grid gap-3">
-          <div>
-            <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">Usuario</div>
-            <div className="text-sm">{username ?? '—'}</div>
+    <div className="space-y-6">
+      <section className="rounded-3xl border border-zinc-200/70 bg-white/70 p-6 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
+        <div className="flex flex-col gap-2">
+          <div className="text-xl font-semibold">Perfil</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-300">
+            Guarda tu perfil localmente. Si estás online y el backend está listo, puedes sincronizarlo a Amplify.
           </div>
+        </div>
 
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block">
             <div className="text-sm font-semibold">Nombre</div>
             <input
-              className="mt-1 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={draft.name}
-              onChange={(e) => update('name', e.target.value)}
+              value={profile.name}
+              onChange={(e) => updateField('name', e.target.value)}
               placeholder="Tu nombre"
+              className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
             />
           </label>
-
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="text-sm font-semibold">Rol</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-300">En fase 2 vendrá de Cognito/claims.</div>
-            </div>
-            <select
-              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={draft.role}
-              onChange={(e) => update('role', e.target.value as ProfileDraft['role'])}
-            >
-              <option value="PRODUCTOR">Productor</option>
-              <option value="TRANSPORTISTA">Transportista</option>
-            </select>
-          </div>
 
           <label className="block">
             <div className="text-sm font-semibold">Teléfono</div>
             <input
-              className="mt-1 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={draft.phone}
-              onChange={(e) => update('phone', e.target.value)}
+              value={profile.phone}
+              onChange={(e) => updateField('phone', e.target.value)}
               placeholder="+57..."
+              className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
             />
           </label>
 
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block">
-              <div className="text-sm font-semibold">Municipio</div>
-              <input
-                className="mt-1 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                value={draft.municipio}
-                onChange={(e) => update('municipio', e.target.value)}
-                placeholder="Aquitania"
-              />
-            </label>
-            <label className="block">
-              <div className="text-sm font-semibold">Vereda</div>
-              <input
-                className="mt-1 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                value={draft.vereda}
-                onChange={(e) => update('vereda', e.target.value)}
-                placeholder="(opcional)"
-              />
-            </label>
-          </div>
-
-          <button
-            type="button"
-            className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white dark:bg-emerald-500 dark:text-zinc-950"
-            onClick={onSaveProfileLocal}
-          >
-            Guardar
-          </button>
-
-          {amplifyReady ? (
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-xs text-zinc-600 dark:text-zinc-300">
-                Sincroniza este perfil a la tabla <span className="font-semibold">User</span>.
-              </div>
-              <button
-                type="button"
-                className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold disabled:opacity-60 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                disabled={busy}
-                onClick={onSyncProfileBackend}
-              >
-                {busy ? '...' : 'Sincronizar'}
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-zinc-200/70 bg-white/70 p-4 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40">
-        <h2 className="text-base font-semibold">Solicitudes</h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Crea solicitudes de soporte / cambios. Offline-first.</p>
-
-        <div className="mt-3 grid gap-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-semibold">Tipo</div>
-            <select
-              className="rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={reqType}
-              onChange={(e) => setReqType(e.target.value as RequestDraft['type'])}
-            >
-              <option value="SUPPORT">Soporte</option>
-              <option value="ROLE_CHANGE">Cambio de rol</option>
-              <option value="DATA_FIX">Corrección de datos</option>
-              <option value="OTHER">Otra</option>
-            </select>
-          </div>
-
           <label className="block">
-            <div className="text-sm font-semibold">Título</div>
+            <div className="text-sm font-semibold">Municipio</div>
             <input
-              className="mt-1 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              value={reqTitle}
-              onChange={(e) => setReqTitle(e.target.value)}
-              placeholder="Ej: No puedo editar un pendiente"
+              value={profile.municipio}
+              onChange={(e) => updateField('municipio', e.target.value)}
+              placeholder="Aquitania"
+              className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
             />
           </label>
 
           <label className="block">
-            <div className="text-sm font-semibold">Detalles</div>
-            <textarea
-              className="mt-1 w-full resize-none rounded-2xl border border-zinc-200/70 bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              rows={3}
-              value={reqDetails}
-              onChange={(e) => setReqDetails(e.target.value)}
-              placeholder="Describe el problema o la solicitud"
+            <div className="text-sm font-semibold">Vereda</div>
+            <input
+              value={profile.vereda}
+              onChange={(e) => updateField('vereda', e.target.value)}
+              placeholder="Opcional"
+              className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
             />
           </label>
 
-          <button
-            type="button"
-            className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-emerald-500 dark:text-zinc-950"
-            disabled={busy}
-            onClick={onCreateRequest}
-          >
-            {busy ? '...' : 'Crear solicitud'}
-          </button>
+          <label className="block sm:col-span-2">
+            <div className="text-sm font-semibold">Rol</div>
+            <select
+              value={profile.role}
+              onChange={(e) => updateField('role', e.target.value as Profile['role'])}
+              className="mt-2 w-full rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-200 dark:border-zinc-800/60 dark:bg-zinc-950/40"
+            >
+              <option value="PRODUCTOR">Productor</option>
+              <option value="TRANSPORTISTA">Transportista</option>
+            </select>
+          </label>
         </div>
 
-        <div className="mt-4 space-y-2">
-          {requests.slice(0, 10).map((r) => (
-            <div
-              key={r.id}
-              className="rounded-2xl border border-zinc-200/70 bg-white/60 p-3 text-sm dark:border-zinc-800/60 dark:bg-zinc-950/30"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="font-semibold">{r.title}</div>
-                  <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-                    {r.type} · {r.status} {r.backendId ? '· backend' : '· local'}
-                  </div>
-                  {r.details ? <div className="mt-2 text-zinc-700 dark:text-zinc-200">{r.details}</div> : null}
-                </div>
-                <button
-                  type="button"
-                  className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold text-rose-700 dark:border-zinc-800/60 dark:bg-zinc-950/40"
-                  onClick={() => deleteRequestLocal(r.id)}
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))}
-          {requests.length === 0 ? <div className="text-sm text-zinc-600 dark:text-zinc-300">Aún no hay solicitudes.</div> : null}
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            type="button"
+            className="rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:text-zinc-950"
+            onClick={() => {
+              saveProfile(profile)
+              onToast({ kind: 'success', message: 'Perfil guardado localmente.' })
+            }}
+          >
+            Guardar local
+          </button>
+
+          <div className="text-sm text-zinc-600 dark:text-zinc-300">
+            {canSync
+              ? 'Puedes sincronizar el perfil con el backend.'
+              : 'Para sincronizar necesitas estar online y autenticado.'}
+          </div>
+
+          <button
+            type="button"
+            className="rounded-2xl border border-zinc-200/70 bg-white/70 px-5 py-3 text-sm font-semibold text-zinc-800 transition hover:border-emerald-500 hover:text-emerald-700 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-200"
+            onClick={syncProfile}
+            disabled={!canSync || busy}
+          >
+            {busy ? 'Sincronizando…' : 'Sincronizar backend'}
+          </button>
         </div>
       </section>
-    </>
+    </div>
   )
 }

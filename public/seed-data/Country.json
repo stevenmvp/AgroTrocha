@@ -1,0 +1,122 @@
+[
+  {
+    "code": "C01",
+    "name": "Pais 1",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C02",
+    "name": "Pais 2",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C03",
+    "name": "Pais 3",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C04",
+    "name": "Pais 4",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C05",
+    "name": "Pais 5",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C06",
+    "name": "Pais 6",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C07",
+    "name": "Pais 7",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C08",
+    "name": "Pais 8",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C09",
+    "name": "Pais 9",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C10",
+    "name": "Pais 10",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C11",
+    "name": "Pais 11",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C12",
+    "name": "Pais 12",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C13",
+    "name": "Pais 13",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C14",
+    "name": "Pais 14",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C15",
+    "name": "Pais 15",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C16",
+    "name": "Pais 16",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C17",
+    "name": "Pais 17",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C18",
+    "name": "Pais 18",
+    "currencyCode": "USD",
+    "active": true
+  },
+  {
+    "code": "C19",
+    "name": "Pais 19",
+    "currencyCode": "COP",
+    "active": true
+  },
+  {
+    "code": "C20",
+    "name": "Pais 20",
+    "currencyCode": "USD",
+    "active": true
+  }
+]
