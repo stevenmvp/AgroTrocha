@@ -58,6 +58,22 @@ syncExternalDataLambda.addEnvironment(
   backend.data.resources.tables['PriceReference'].tableName
 )
 
+<<<<<<< HEAD
 backend.data.resources.tables['ExternalApi'].grantReadData(syncExternalDataLambda)
 backend.data.resources.tables['ExternalSyncJob'].grantReadWriteData(syncExternalDataLambda)
 backend.data.resources.tables['PriceReference'].grantReadWriteData(syncExternalDataLambda)
+=======
+chatLambda.addToRolePolicy(bedrockInvokePolicy)
+analyzeAudioLambda.addToRolePolicy(bedrockInvokePolicy)
+
+// Permisos/env para sincronización de APIs externas (SIPSA, etc.).
+const syncExternalLambda = backend.syncExternalData.resources.lambda as unknown as LambdaFunction
+
+syncExternalLambda.addEnvironment('EXTERNAL_API_TABLE', backend.data.resources.tables['ExternalApi'].tableName)
+syncExternalLambda.addEnvironment('EXTERNAL_SYNC_JOB_TABLE', backend.data.resources.tables['ExternalSyncJob'].tableName)
+syncExternalLambda.addEnvironment('PRICE_REFERENCE_TABLE', backend.data.resources.tables['PriceReference'].tableName)
+
+backend.data.resources.tables['ExternalApi'].grantReadData(syncExternalLambda)
+backend.data.resources.tables['ExternalSyncJob'].grantReadWriteData(syncExternalLambda)
+backend.data.resources.tables['PriceReference'].grantReadWriteData(syncExternalLambda)
+>>>>>>> d468b75 (fix: assign syncExternalData function to data stack and resolve Amplify circular dependency)

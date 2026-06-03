@@ -9,6 +9,7 @@ export type NavKey =
   | 'pendientes'
   | 'productos'
   | 'mercado'
+  | 'sipsa'
   | 'solicitudes'
   | 'alertas'
   | 'notificaciones'
@@ -28,6 +29,7 @@ const tabs: Tab[] = [
   { key: 'pendientes', label: 'Pendientes' },
   { key: 'productos', label: 'Productos' },
   { key: 'mercado', label: 'Mercado' },
+  { key: 'sipsa', label: 'SIPSA' },
   { key: 'solicitudes', label: 'Solicitudes' },
   { key: 'alertas', label: 'Alertas' },
   { key: 'notificaciones', label: 'Notifs' },

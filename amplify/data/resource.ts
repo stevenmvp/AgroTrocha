@@ -348,6 +348,7 @@ const schema = a.schema({
       baseUrl: a.url(),
       authType: a.enum(['NONE', 'API_KEY', 'OAUTH2']),
       secretName: a.string(),
+      configJson: a.string(),
       enabled: a.boolean(),
       jobs: a.hasMany('ExternalSyncJob', 'apiId'),
     })

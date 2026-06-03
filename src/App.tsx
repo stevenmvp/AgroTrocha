@@ -15,6 +15,7 @@ import { NotificacionesModule } from './modules/Notificaciones'
 import { PendientesModule } from './modules/Pendientes'
 import { ProductosModule } from './modules/Productos'
 import { ReportesModule } from './modules/Reportes'
+import { SipsaModule } from './modules/SIPSA'
 import { SolicitudesModule } from './modules/Solicitudes'
 import { TablasModule } from './modules/Tablas'
 import { getErrorMessage } from './lib/getErrorMessage'
@@ -151,6 +152,8 @@ function App({ amplifyReady, auth }: AppProps) {
         return 'Productos'
       case 'mercado':
         return 'Mercado'
+      case 'sipsa':
+        return 'SIPSA'
       case 'solicitudes':
         return 'Solicitudes'
       case 'alertas':
@@ -288,6 +291,15 @@ function App({ amplifyReady, auth }: AppProps) {
             density={density}
             onToast={(t) => setToast(t)}
             onNavigate={(k) => setActive(k)}
+          />
+        ) : null}
+
+        {active === 'sipsa' ? (
+          <SipsaModule
+            amplifyReady={amplifyReady}
+            isOnline={isOnline}
+            density={density}
+            onToast={(t) => setToast(t)}
           />
         ) : null}
 
