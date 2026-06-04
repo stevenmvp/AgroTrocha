@@ -387,6 +387,22 @@ const schema = a.schema({
       allow.groups(ADMIN_GROUPS),
     ]),
 
+  ChatMessage: a
+    .model({
+      petitionId: a.id().required(),
+      authorId: a.id(),
+      authorName: a.string().required(),
+      authorRole: a.enum(['PRODUCTOR', 'TRANSPORTISTA', 'ADMIN', 'OPERADOR']),
+      content: a.string().required(),
+      createdAt: a.datetime(),
+    })
+    .secondaryIndexes((index) => [index('petitionId').sortKeys(['createdAt']).queryField('listChatMessagesByPetition')])
+    .authorization((allow) => [
+      allow.authenticated(),
+      allow.owner(),
+      allow.groups(ADMIN_GROUPS).to(['read']),
+    ]),
+
   /**
    * Operación administrativa: dispara una sincronización (manual) de una ExternalApi.
    * En producción puede complementarse con scheduling.

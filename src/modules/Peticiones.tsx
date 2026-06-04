@@ -2,10 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
 import type { Schema } from '../../amplify/data/resource'
 import { ChatModule } from './Chat'
+import { loadProfile } from './Perfil'
 
 type PetitionItem = {
   id: string
   createdAt: string
+  createdBy?: string | null
+  externalId?: string | null
   product?: string
   quantity?: number
   unit?: string
@@ -50,6 +53,30 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
   const [chatFor, setChatFor] = useState<string | null>(null)
 
   const canSync = amplifyReady && isOnline
+  const profile = loadProfile()
+  const isProducer = profile.role === 'PRODUCTOR'
+
+  useEffect(() => {
+    if (!canSync) return
+    const pending = items.filter((i) => !i.sent)
+    if (pending.length === 0) return
+
+    let cancelled = false
+    async function flush() {
+      for (const p of pending) {
+        if (cancelled) return
+        try {
+          await sendPetitionToBackend(p)
+        } catch (e) {
+          // keep trying later
+        }
+      }
+    }
+    flush()
+    return () => {
+      cancelled = true
+    }
+  }, [canSync])
 
   useEffect(() => savePetitions(items), [items])
 
@@ -61,6 +88,7 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
     const p: PetitionItem = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
+      createdBy: username ?? null,
       product: product.trim(),
       quantity: quantity ?? undefined,
       unit,
@@ -91,15 +119,33 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
     setBusy(true)
     try {
       const client = generateClient<Schema>()
-      const body = {
-        type: 'OTHER',
-        title: `Peticiones: ${p.product ?? 'producto'}`,
-        details: p.notes || undefined,
-        payloadJson: JSON.stringify({ product: p.product, quantity: p.quantity, unit: p.unit, pickupDate: p.pickupDate, municipio: p.municipio, missing: p.missing }),
+      if (client.mutations?.createOrderSecure) {
+        const res = await client.mutations.createOrderSecure({
+          product: p.product ?? '',
+          quantity: p.quantity ?? 0,
+          unit: p.unit,
+          pickupDate: p.pickupDate,
+          municipio: p.municipio ?? '',
+          aiAnalysis: undefined,
+        })
+        // assume resolver returns orderId string
+        const orderId = typeof res === 'string' ? res : res?.data ?? null
+        setItems((prev) => prev.map((it) => (it.id === p.id ? { ...it, sent: true, externalId: orderId ?? null } : it)))
+        onToast({ kind: 'success', message: 'Petición guardada en backend.' })
+      } else if (client.mutations?.createRequestSecure) {
+        // fallback to Request-based API
+        const body = {
+          type: 'OTHER',
+          title: `Peticiones: ${p.product ?? 'producto'}`,
+          details: p.notes || undefined,
+          payloadJson: JSON.stringify({ product: p.product, quantity: p.quantity, unit: p.unit, pickupDate: p.pickupDate, municipio: p.municipio, missing: p.missing }),
+        }
+        await client.mutations.createRequestSecure(body)
+        setItems((prev) => prev.map((it) => (it.id === p.id ? { ...it, sent: true } : it)))
+        onToast({ kind: 'success', message: 'Petición enviada al backend.' })
+      } else {
+        throw new Error('No backend mutation available')
       }
-      await client.mutations.createRequestSecure(body)
-      setItems((prev) => prev.map((it) => (it.id === p.id ? { ...it, sent: true } : it)))
-      onToast({ kind: 'success', message: 'Petición enviada al backend.' })
     } catch (e) {
       console.warn('peticion send failed', e)
       onToast({ kind: 'error', message: 'No se pudo enviar la petición. Queda en cola.' })
@@ -115,24 +161,31 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border p-6 bg-white/70">
-        <div className="text-xl font-semibold">Peticiones</div>
-        <div className="text-sm text-zinc-600">Conecta productores y transportistas — guarda toda la información siguiendo el esquema de datos.</div>
+      {isProducer ? (
+        <section className="rounded-3xl border p-6 bg-white/70">
+          <div className="text-xl font-semibold">Peticiones</div>
+          <div className="text-sm text-zinc-600">Conecta productores y transportistas — guarda toda la información siguiendo el esquema de datos.</div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <input placeholder="Producto" value={product} onChange={(e) => setProduct(e.target.value)} className="rounded-2xl border px-3 py-2" />
-          <input placeholder="Cantidad" value={quantity ?? ''} onChange={(e) => setQuantity(Number(e.target.value || 0) || undefined)} className="rounded-2xl border px-3 py-2" />
-          <input placeholder="Unidad" value={unit} onChange={(e) => setUnit(e.target.value)} className="rounded-2xl border px-3 py-2" />
-          <input placeholder="Fecha de recolección" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="rounded-2xl border px-3 py-2" />
-          <input placeholder="Municipio" value={municipio} onChange={(e) => setMunicipio(e.target.value)} className="rounded-2xl border px-3 py-2" />
-          <input placeholder="Items faltantes (coma separated)" value={missingText} onChange={(e) => setMissingText(e.target.value)} className="rounded-2xl border px-3 py-2" />
-        </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <input placeholder="Producto" value={product} onChange={(e) => setProduct(e.target.value)} className="rounded-2xl border px-3 py-2" />
+            <input placeholder="Cantidad" value={quantity ?? ''} onChange={(e) => setQuantity(Number(e.target.value || 0) || undefined)} className="rounded-2xl border px-3 py-2" />
+            <input placeholder="Unidad" value={unit} onChange={(e) => setUnit(e.target.value)} className="rounded-2xl border px-3 py-2" />
+            <input placeholder="Fecha de recolección" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="rounded-2xl border px-3 py-2" />
+            <input placeholder="Municipio" value={municipio} onChange={(e) => setMunicipio(e.target.value)} className="rounded-2xl border px-3 py-2" />
+            <input placeholder="Items faltantes (coma separated)" value={missingText} onChange={(e) => setMissingText(e.target.value)} className="rounded-2xl border px-3 py-2" />
+          </div>
 
-        <div className="mt-4 flex gap-2">
-          <button disabled={busy} onClick={createPetition} className="rounded-2xl bg-emerald-600 px-4 py-2 text-white">{busy ? 'Enviando…' : 'Crear petición'}</button>
-          <div className="px-3 py-2 text-sm text-zinc-600">{summary}</div>
-        </div>
-      </section>
+          <div className="mt-4 flex gap-2">
+            <button disabled={busy} onClick={createPetition} className="rounded-2xl bg-emerald-600 px-4 py-2 text-white">{busy ? 'Enviando…' : 'Crear petición'}</button>
+            <div className="px-3 py-2 text-sm text-zinc-600">{summary}</div>
+          </div>
+        </section>
+      ) : (
+        <section className="rounded-3xl border p-6 bg-white/70">
+          <div className="text-xl font-semibold">Peticiones</div>
+          <div className="text-sm text-zinc-600">Estás viendo las peticiones públicas — usa el botón "Ofrecer servicio" para unirte.</div>
+        </section>
+      )}
 
       <section className="rounded-3xl border p-6 bg-white/70">
         <div className="text-lg font-semibold">Listado</div>

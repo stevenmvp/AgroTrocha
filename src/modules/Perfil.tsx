@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
 import type { Schema } from '../../amplify/data/resource'
 
-type Profile = {
+export type Profile = {
   name: string
   phone: string
   municipio: string
@@ -12,7 +12,7 @@ type Profile = {
 
 const STORAGE_KEY = 'agrotrocha.profile.v1'
 
-function loadProfile(): Profile {
+export function loadProfile(): Profile {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return { name: '', phone: '', municipio: '', vereda: '', role: 'PRODUCTOR' }
@@ -29,7 +29,7 @@ function loadProfile(): Profile {
   }
 }
 
-function saveProfile(profile: Profile) {
+export function saveProfile(profile: Profile) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
 }
 
