@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
+import { getCurrentUser } from 'aws-amplify/auth'
 import type { Schema } from '../../amplify/data/resource'
 import { ChatModule } from './Chat'
 import { loadProfile } from './Perfil'
@@ -47,19 +48,36 @@ function savePetitions(items: PetitionItem[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
 }
 
-function getOrderIdFromResponse(response: unknown): string | null {
-  if (typeof response === 'string') return response
-  if (!response || typeof response !== 'object') return null
+function parseRemoteId(response: unknown): string | null {
+  if (typeof response === 'string') {
+    try {
+      const parsed = JSON.parse(response) as Record<string, unknown>
+      if (typeof parsed.orderId === 'string') return parsed.orderId
+      if (typeof parsed.requestId === 'string') return parsed.requestId
+      if (typeof parsed.createOrderSecure === 'string') return parsed.createOrderSecure
+      if (typeof parsed.createRequestSecure === 'string') return parsed.createRequestSecure
+      return response
+    } catch {
+      return response
+    }
+  }
 
+  if (!response || typeof response !== 'object') return null
   const maybeResponse = response as Record<string, unknown>
   if (typeof maybeResponse.createOrderSecure === 'string') return maybeResponse.createOrderSecure
   if (typeof maybeResponse.createRequestSecure === 'string') return maybeResponse.createRequestSecure
-  if (typeof maybeResponse.data === 'string') return maybeResponse.data
+  if (typeof maybeResponse.requestId === 'string') return maybeResponse.requestId
+  if (typeof maybeResponse.orderId === 'string') return maybeResponse.orderId
+  if (typeof maybeResponse.data === 'string') {
+    return parseRemoteId(maybeResponse.data)
+  }
 
   const data = maybeResponse.data as Record<string, unknown> | undefined
   if (data) {
     if (typeof data.createOrderSecure === 'string') return data.createOrderSecure
     if (typeof data.createRequestSecure === 'string') return data.createRequestSecure
+    if (typeof data.requestId === 'string') return data.requestId
+    if (typeof data.orderId === 'string') return data.orderId
   }
 
   return null
@@ -128,10 +146,29 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
   const [busy, setBusy] = useState(false)
   const [chatFor, setChatFor] = useState<string | null>(null)
   const [lastSyncError, setLastSyncError] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   const canSync = amplifyReady && isOnline
   const profile = loadProfile()
   const isProducer = profile.role === 'PRODUCTOR'
+
+  useEffect(() => {
+    if (!amplifyReady) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const current = await getCurrentUser()
+        if (!cancelled) {
+          setCurrentUserId((current as any)?.attributes?.sub ?? (current as any)?.username ?? null)
+        }
+      } catch {
+        if (!cancelled) setCurrentUserId(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [amplifyReady])
 
   const mergedItems = useMemo(() => {
     const combined = [...items]
@@ -184,7 +221,7 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
     loadRemoteOrders().catch((error) => {
       console.warn('load remote orders failed', error)
     })
-  }, [canSync, profile.role, username, profile.municipio])
+  }, [canSync, profile.role, username, profile.municipio, currentUserId])
 
   const summary = useMemo(
     () => `${items.filter((i) => i.status === 'OPEN').length} abiertas · ${items.filter((i) => i.status === 'MATCHED').length} emparejadas`,
@@ -192,14 +229,18 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
   )
 
   async function loadRemoteOrders() {
-    if (!username) return
     setLastSyncError(null)
     try {
       const client = generateClient<Schema>()
       let response: unknown = null
 
       if (isProducer) {
-        response = await client.models.OrderPublic.listPublicOrdersByCreator({ createdByUserId: username })
+        const creatorId = currentUserId ?? username
+        if (!creatorId) {
+          setRemoteItems([])
+          return
+        }
+        response = await client.models.OrderPublic.listPublicOrdersByCreator({ createdByUserId: creatorId })
       } else if (profile.municipio) {
         response = await client.models.OrderPublic.listPublicOrdersByMunicipioAndPickupDate({
           municipio: profile.municipio,
@@ -265,7 +306,7 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
           municipio: p.municipio ?? '',
           aiAnalysis: undefined,
         })
-        const orderId = getOrderIdFromResponse(response)
+        const orderId = parseRemoteId(response)
         setItems((prev) =>
           prev.map((it) =>
             it.id === p.id
@@ -287,8 +328,19 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
           details: p.notes || undefined,
           payloadJson: JSON.stringify({ product: p.product, quantity: p.quantity, unit: p.unit, pickupDate: p.pickupDate, municipio: p.municipio, missing: p.missing }),
         }
-        await client.mutations.createRequestSecure(body)
-        setItems((prev) => prev.map((it) => (it.id === p.id ? { ...it, sent: true } : it)))
+        const response = await client.mutations.createRequestSecure(body)
+        const requestId = parseRemoteId(response)
+        setItems((prev) =>
+          prev.map((it) =>
+            it.id === p.id
+              ? {
+                  ...it,
+                  sent: true,
+                  externalId: requestId ?? null,
+                }
+              : it,
+          ),
+        )
         onToast({ kind: 'success', message: 'Petición enviada al backend.' })
       } else {
         throw new Error('No backend mutation available')
