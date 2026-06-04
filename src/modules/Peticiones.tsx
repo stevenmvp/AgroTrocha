@@ -3,6 +3,7 @@ import { generateClient } from 'aws-amplify/api'
 import { getCurrentUser } from 'aws-amplify/auth'
 import type { Schema } from '../../amplify/data/resource'
 import { ChatModule } from './Chat'
+import { emit, on } from '../lib/events'
 import { loadProfile } from './Perfil'
 
 type PetitionItem = {
@@ -191,6 +192,11 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
 
   useEffect(() => {
     savePetitions(items)
+    try {
+      emit('petitions:changed')
+    } catch {
+      // ignore
+    }
   }, [items])
 
   useEffect(() => {
@@ -238,6 +244,15 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
     }
   }, [canSync, profile.role, username, profile.municipio, currentUserId])
 
+  useEffect(() => {
+    // respond to external refresh requests
+    const offHandler = on('petitions:refresh', () => {
+      if (canSync) void loadRemoteOrders()
+    })
+    return () => offHandler()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canSync])
+
   const summary = useMemo(
     () => `${items.filter((i) => i.status === 'OPEN').length} abiertas · ${items.filter((i) => i.status === 'MATCHED').length} emparejadas`,
     [items],
@@ -269,6 +284,11 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
 
       const list = extractListItems<Record<string, unknown>>(response)
       setRemoteItems(list.map(mapRemoteOrder))
+      try {
+        emit('petitions:changed')
+      } catch {
+        // ignore
+      }
     } catch (error) {
       setLastSyncError('No se pudieron cargar pedidos remotos.')
       console.warn('loadRemoteOrders error', error)
@@ -296,6 +316,11 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
     }
 
     setItems((prev) => [p, ...prev])
+    try {
+      emit('petitions:changed')
+    } catch {
+      // ignore
+    }
     setProduct('')
     setQuantity(undefined)
     setUnit('kg')
@@ -390,7 +415,19 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
           </div>
 
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <button disabled={busy} onClick={createPetition} className="rounded-2xl bg-emerald-600 px-4 py-2 text-white">{busy ? 'Enviando…' : 'Crear petición'}</button>
+            <div className="flex gap-2">
+              <button disabled={busy} onClick={createPetition} className="rounded-2xl bg-emerald-600 px-4 py-2 text-white">{busy ? 'Enviando…' : 'Crear petición'}</button>
+              <button
+                type="button"
+                className="rounded-2xl border px-3 py-2"
+                onClick={() => {
+                  if (!canSync) return onToast({ kind: 'info', message: 'Necesitas backend y conexión para recargar.' })
+                  void loadRemoteOrders()
+                }}
+              >
+                Recargar
+              </button>
+            </div>
             <div className="px-3 py-2 text-sm text-zinc-600">{summary}</div>
           </div>
           {!canSync ? (

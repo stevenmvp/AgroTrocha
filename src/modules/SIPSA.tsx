@@ -197,7 +197,23 @@ export function SipsaModule({
   }
 
   useEffect(() => {
-    if (!canUseBackend) return
+    if (!canUseBackend) {
+      // load seed data from public/seed-data as fallback
+      let cancelled = false
+      ;(async () => {
+        try {
+          const res = await fetch('/seed-data/PriceReference.json')
+          if (!res.ok) return
+          const data = (await res.json()) as PriceRef[]
+          if (!cancelled) setItems(data)
+        } catch {
+          // ignore
+        }
+      })()
+      return () => {
+        cancelled = true
+      }
+    }
     void refresh()
     void loadAdminApis()
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/api'
 import { analyzeTextWithAI } from '../lib/orderAnalyze'
@@ -97,6 +97,16 @@ export function IAModule({
     if (!amplifyReady) return 'Sin backend: respuestas locales.'
     return 'Chatbot básico: procesa solo texto localmente.'
   }, [amplifyReady, isOnline])
+
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key === KEY) {
+        setMessages(loadChat())
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
 
   function push(msg: Msg) {
     setMessages((prev) => {
@@ -304,13 +314,22 @@ export function IAModule({
               <h2 className="text-base font-semibold">Pregúntale a la IA</h2>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{hint}</p>
             </div>
-            <button
-              type="button"
-              className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold dark:border-zinc-800/60 dark:bg-zinc-950/40"
-              onClick={clearChat}
-            >
-              Limpiar
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold dark:border-zinc-800/60 dark:bg-zinc-950/40"
+                onClick={() => setMessages(loadChat())}
+              >
+                Recargar
+              </button>
+              <button
+                type="button"
+                className="rounded-xl border border-zinc-200/70 bg-white/70 px-3 py-2 text-xs font-semibold dark:border-zinc-800/60 dark:bg-zinc-950/40"
+                onClick={clearChat}
+              >
+                Limpiar
+              </button>
+            </div>
           </div>
 
           <div className="mt-3 space-y-2">

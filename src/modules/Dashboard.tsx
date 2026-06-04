@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
 import type { Schema } from '../../amplify/data/resource'
 import { loadPetitions as loadLocalPetitions } from './Peticiones'
+import { on, emit } from '../lib/events'
 
 export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: boolean; isOnline: boolean }) {
   const [remoteCount, setRemoteCount] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [local, setLocal] = useState(() => loadLocalPetitions())
 
   useEffect(() => {
     if (!amplifyReady || !isOnline) return
@@ -25,7 +27,29 @@ export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: bool
     }
   }, [amplifyReady, isOnline])
 
-  const local = useMemo(() => loadLocalPetitions(), [])
+  useEffect(() => {
+    const off = on('petitions:changed', () => setLocal(loadLocalPetitions()))
+    return () => off()
+  }, [])
+
+  // when no backend, try loading sample data from public/seed-data
+  useEffect(() => {
+    if (amplifyReady || isOnline) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/seed-data/Order.json')
+        if (!res.ok) return
+        const data = (await res.json()) as any[]
+        if (!cancelled) setLocal(data.map((d) => ({ ...d, sent: Boolean(d.sent) })))
+      } catch {
+        // ignore
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [amplifyReady, isOnline])
 
   const stats = useMemo(() => {
     const totalLocal = local.length
@@ -34,11 +58,25 @@ export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: bool
     return { totalLocal, synced, pending, remoteCount }
   }, [local, remoteCount])
 
+  function handleRefresh() {
+    // ask Peticiones to refresh remote orders
+    try {
+      emit('petitions:refresh')
+    } catch {
+      // ignore
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <header className="rounded-2xl border p-4 bg-white/70">
-        <div className="text-lg font-semibold">Panel</div>
-        <div className="text-sm text-zinc-600">Resumen rápido de actividad</div>
+      <header className="rounded-2xl border p-4 bg-white/70 flex items-center justify-between">
+        <div>
+          <div className="text-lg font-semibold">Panel</div>
+          <div className="text-sm text-zinc-600">Resumen rápido de actividad</div>
+        </div>
+        <div>
+          <button className="rounded-xl border px-3 py-2" onClick={handleRefresh}>Recargar</button>
+        </div>
       </header>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
