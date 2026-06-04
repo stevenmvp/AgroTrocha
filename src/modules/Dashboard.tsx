@@ -1,0 +1,86 @@
+import { useEffect, useMemo, useState } from 'react'
+import { generateClient } from 'aws-amplify/api'
+import type { Schema } from '../../amplify/data/resource'
+import { loadPetitions as loadLocalPetitions } from './Peticiones'
+
+export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: boolean; isOnline: boolean }) {
+  const [remoteCount, setRemoteCount] = useState<number | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!amplifyReady || !isOnline) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const client = generateClient<Schema>()
+        const response = await client.models.OrderPublic.listPublicOrders({ limit: 1 })
+        const cnt = (response as any)?.total ?? null
+        if (!cancelled) setRemoteCount(typeof cnt === 'number' ? cnt : null)
+      } catch (e) {
+        if (!cancelled) setError('No pude obtener conteo remoto')
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [amplifyReady, isOnline])
+
+  const local = useMemo(() => loadLocalPetitions(), [])
+
+  const stats = useMemo(() => {
+    const totalLocal = local.length
+    const synced = local.filter((p) => p.sent).length
+    const pending = totalLocal - synced
+    return { totalLocal, synced, pending, remoteCount }
+  }, [local, remoteCount])
+
+  return (
+    <div className="space-y-6">
+      <header className="rounded-2xl border p-4 bg-white/70">
+        <div className="text-lg font-semibold">Panel</div>
+        <div className="text-sm text-zinc-600">Resumen rápido de actividad</div>
+      </header>
+
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border p-4 bg-white/70">
+          <div className="text-xs text-zinc-500">Peticiones locales</div>
+          <div className="mt-2 text-2xl font-bold">{stats.totalLocal}</div>
+          <div className="text-sm text-zinc-600">Pendientes: {stats.pending} · Sincronizadas: {stats.synced}</div>
+        </div>
+        <div className="rounded-2xl border p-4 bg-white/70">
+          <div className="text-xs text-zinc-500">Peticiones remotas (conteo)</div>
+          <div className="mt-2 text-2xl font-bold">{stats.remoteCount ?? '—'}</div>
+          <div className="text-sm text-zinc-600">Conexión: {amplifyReady && isOnline ? 'OK' : 'Offline/No backend'}</div>
+        </div>
+        <div className="rounded-2xl border p-4 bg-white/70">
+          <div className="text-xs text-zinc-500">Sincronización</div>
+          <div className="mt-2 text-sm text-zinc-600">Este panel muestra actividad local y conteo remoto cuando hay backend.</div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border p-4 bg-white/70">
+        <div className="text-sm font-semibold">Gráfica sencilla</div>
+        <div className="mt-3 h-28">
+          <svg viewBox="0 0 300 100" className="w-full h-full">
+            {/* Bars: pending, synced */}
+            {(() => {
+              const total = Math.max(1, stats.totalLocal)
+              const pendingH = Math.round((stats.pending / total) * 80)
+              const syncedH = Math.round((stats.synced / total) * 80)
+              return (
+                <g transform="translate(20,10)">
+                  <rect x="0" y={80 - pendingH} width="60" height={pendingH} fill="#f59e0b" rx="4" />
+                  <text x="30" y="95" fontSize="10" textAnchor="middle">Pendientes</text>
+                  <rect x="100" y={80 - syncedH} width="60" height={syncedH} fill="#10b981" rx="4" />
+                  <text x="130" y="95" fontSize="10" textAnchor="middle">Sincronizadas</text>
+                </g>
+              )
+            })()}
+          </svg>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+export default DashboardModule

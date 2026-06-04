@@ -26,7 +26,7 @@ type PetitionItem = {
 
 const STORAGE_KEY = 'agrotrocha.peticiones.v1'
 
-function loadPetitions(): PetitionItem[] {
+export function loadPetitions(): PetitionItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []

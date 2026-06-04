@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
 import type { Schema } from '../amplify/data/resource'
 import { Toast, type ToastState } from './components/Toast'
+import { Sidebar } from './components/Sidebar'
+import DashboardModule from './modules/Dashboard'
 import { ConfigModule } from './modules/Config'
 import { PerfilModule, loadProfile } from './modules/Perfil'
 import { SolicitudesModule } from './modules/Solicitudes'
@@ -112,6 +114,12 @@ export default function App({ amplifyReady, auth }: AppProps) {
 
   const visibleNavItems = navItems.filter((item) => item.roles.includes(profile.role))
 
+  // Sidebar state
+  const [sidebarActive, setSidebarActive] = useState<'dashboard' | string>('dashboard')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false)
+  const backendHealth = amplifyReady ? { status: isOnline ? 'ok' : 'offline', detail: isOnline ? 'Conexión lista' : 'Sin conexión' } : { status: 'checking' as const, detail: 'Backend no inicializado' }
+
   return (
     <div className="min-h-dvh bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
       <Toast toast={toast} onClear={() => setToast(null)} />
@@ -207,8 +215,23 @@ export default function App({ amplifyReady, auth }: AppProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
-        {page === 'perfil' ? (
+      <div className="flex">
+        <Sidebar
+          active={(sidebarActive as any) ?? 'dashboard'}
+          onChange={(k) => setSidebarActive(k)}
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={() => setSidebarCollapsed((s) => !s)}
+          mobileOpen={sidebarMobileOpen}
+          onCloseMobile={() => setSidebarMobileOpen(false)}
+          backendHealth={backendHealth}
+        />
+
+        <main className="mx-auto max-w-6xl px-4 py-6 w-full">
+          {sidebarActive === 'dashboard' ? (
+            <DashboardModule amplifyReady={amplifyReady} isOnline={isOnline} />
+          ) : null}
+
+          {page === 'perfil' ? (
           <PerfilModule
             amplifyReady={amplifyReady}
             isOnline={isOnline}
