@@ -218,9 +218,24 @@ export function PeticionesModule({ amplifyReady, isOnline, username, onToast }: 
 
   useEffect(() => {
     if (!canSync) return
-    loadRemoteOrders().catch((error) => {
-      console.warn('load remote orders failed', error)
-    })
+    let cancelled = false
+    const run = async () => {
+      try {
+        await loadRemoteOrders()
+      } catch (error) {
+        if (!cancelled) console.warn('load remote orders failed', error)
+      }
+    }
+    // First run
+    void run()
+    // Poll every 30s while connected
+    const id = setInterval(() => {
+      void run()
+    }, 30_000)
+    return () => {
+      cancelled = true
+      clearInterval(id)
+    }
   }, [canSync, profile.role, username, profile.municipio, currentUserId])
 
   const summary = useMemo(

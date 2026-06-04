@@ -218,7 +218,15 @@ export default function App({ amplifyReady, auth }: AppProps) {
       <div className="flex">
         <Sidebar
           active={(sidebarActive as any) ?? 'dashboard'}
-          onChange={(k) => setSidebarActive(k)}
+          onChange={(k) => {
+            setSidebarActive(k)
+            // Map sidebar keys to top-level pages
+            if (k === 'pendientes' || k === 'consolidaciones' || k === 'pendientes') setPage('peticiones')
+            else if (k === 'sipsa') setPage('sipsa')
+            else if (k === 'solicitudes') setPage('solicitudes')
+            else if (k === 'alertas') setPage('alertas')
+            else if (k === 'dashboard') setPage('peticiones')
+          }}
           collapsed={sidebarCollapsed}
           onToggleCollapsed={() => setSidebarCollapsed((s) => !s)}
           mobileOpen={sidebarMobileOpen}
