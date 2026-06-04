@@ -1,6 +1,7 @@
 import { a, defineData, type ClientSchema } from '@aws-amplify/backend'
 import { secureOrders } from '../functions/secure-orders/resource'
 import { syncExternalData } from '../functions/sync-external-data/resource'
+import { askBedrock } from '../functions/ask-bedrock/resource'
 
 const ADMIN_GROUPS = ['ADMIN', 'STAFF']
 
@@ -513,6 +514,27 @@ const schema = a.schema({
     .returns(a.string())
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(secureOrders)),
+
+  /**
+   * Consulta a Claude Haiku (o modelo configurado) en AWS Bedrock.
+   * Endpoint seguro para análisis de texto, clasificación, y generación de contenido.
+   *
+   * Argumentos:
+   * - prompt: string (texto que envía el usuario)
+   * - modelId: string (opcional, si no se pasa usa AI_MODEL del entorno)
+   *
+   * Retorna:
+   * - JSON con { success: true, response: string } o { success: false, error: string }
+   */
+  askBedrock: a
+    .mutation()
+    .arguments({
+      prompt: a.string().required(),
+      modelId: a.string(),
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(askBedrock)),
 })
 
 export type Schema = ClientSchema<typeof schema>

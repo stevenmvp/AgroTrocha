@@ -288,8 +288,38 @@ export function IAModule({
 
     setBusy(true)
     try {
-      // MVP: askAI no está disponible. Usar respuestas locales.
-      const assistantText = localReply(text)
+      let assistantText: string
+
+      // Si Amplify está listo e isOnline, usa Bedrock. Si no, usa respuestas locales.
+      if (amplifyReady && isOnline) {
+        try {
+          const client = generateClient<Schema>()
+          const response = await client.mutations.askBedrock({
+            prompt: text,
+          })
+
+          // La respuesta es un string JSON con { success: boolean, response?: string, error?: string }
+          const parsed = JSON.parse(response as string) as {
+            success: boolean
+            response?: string
+            error?: string
+          }
+
+          if (parsed.success && parsed.response) {
+            assistantText = parsed.response
+          } else {
+            assistantText = `Error al procesar: ${parsed.error ?? 'respuesta vacía'}`
+          }
+        } catch (bedrockErr: unknown) {
+          const msg = bedrockErr instanceof Error ? bedrockErr.message : String(bedrockErr)
+          console.error('Error al invocar Bedrock:', msg)
+          assistantText = `No pude conectar con Bedrock: ${msg}`
+        }
+      } else {
+        // Modo local cuando offline o sin backend
+        assistantText = localReply(text)
+      }
+
       push({ id: makeId(), role: 'assistant', text: assistantText, at: new Date().toISOString() })
       speak(assistantText)
     } catch (e) {
