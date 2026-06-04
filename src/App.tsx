@@ -10,9 +10,37 @@ import { SolicitudesModule } from './modules/Solicitudes'
 import { PeticionesModule } from './modules/Peticiones'
 import { IAModule } from './modules/IA'
 import { SipsaModule } from './modules/SIPSA'
+import {
+  ReportsModule,
+  TablesModule,
+  JsonLoaderModule,
+  ConsolidacionesModule,
+  PendientesModule,
+  ProductosModule,
+  MercadoModule,
+  NotificacionesModule,
+  AlertasModule,
+} from './modules/StaticPages'
 import { loadSettings, saveSettings, type Settings } from './state/settings'
 
-type Page = 'perfil' | 'peticiones' | 'viajes' | 'alertas' | 'ia' | 'sipsa' | 'solicitudes' | 'config'
+type Page =
+  | 'dashboard'
+  | 'perfil'
+  | 'peticiones'
+  | 'reportes'
+  | 'tablas'
+  | 'cargas-json'
+  | 'consolidaciones'
+  | 'pendientes'
+  | 'productos'
+  | 'mercado'
+  | 'sipsa'
+  | 'notificaciones'
+  | 'solicitudes'
+  | 'alertas'
+  | 'config'
+  | 'viajes'
+  | 'ia'
 
 type NotificationItem = Schema['Notification']['type']
 
@@ -34,7 +62,7 @@ type AppProps = {
 }
 
 export default function App({ amplifyReady, auth }: AppProps) {
-  const [page, setPage] = useState<Page>('peticiones')
+  const [page, setPage] = useState<Page>('dashboard')
   const [toast, setToast] = useState<ToastState>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [settings, setSettings] = useState<Settings>(() => loadSettings())
@@ -115,7 +143,8 @@ export default function App({ amplifyReady, auth }: AppProps) {
             <div className="hidden rounded-full bg-zinc-200/50 px-2 py-0.5 text-xs font-semibold text-zinc-500 sm:inline-block">{profile.role}</div>
           </div>
 
-          <div className="relative">
+          <div className="flex items-center gap-3 relative">
+            <div className="text-xs text-zinc-500 dark:text-zinc-400">Modo demostración • Datos de prueba cargados</div>
             <button
               type="button"
               className="relative rounded-xl border border-zinc-200/70 bg-white/70 p-2 dark:border-zinc-800/60 dark:bg-zinc-950/40"
@@ -131,7 +160,7 @@ export default function App({ amplifyReady, auth }: AppProps) {
             </button>
 
             {notificationsOpen ? (
-              <div className="absolute right-0 z-20 mt-2 w-[320px] rounded-2xl border border-zinc-200/70 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-zinc-800/60 dark:bg-zinc-950/70">
+              <div className="absolute right-0 top-full z-20 mt-2 w-[320px] rounded-2xl border border-zinc-200/70 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-zinc-800/60 dark:bg-zinc-950/70">
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-sm font-semibold">Notificaciones</div>
                   <button
@@ -177,11 +206,7 @@ export default function App({ amplifyReady, auth }: AppProps) {
           active={(sidebarActive as any) ?? 'dashboard'}
           onChange={(k) => {
             setSidebarActive(k)
-            if (k === 'pendientes' || k === 'consolidaciones') setPage('peticiones')
-            else if (k === 'sipsa') setPage('sipsa')
-            else if (k === 'solicitudes') setPage('solicitudes')
-            else if (k === 'alertas') setPage('alertas')
-            else if (k === 'dashboard') setPage('peticiones')
+            setPage(k as Page)
           }}
           collapsed={sidebarCollapsed}
           onToggleCollapsed={() => setSidebarCollapsed((s) => !s)}
@@ -230,6 +255,15 @@ export default function App({ amplifyReady, auth }: AppProps) {
             />
           ) : null}
 
+          {page === 'reportes' ? <ReportsModule /> : null}
+          {page === 'tablas' ? <TablesModule /> : null}
+          {page === 'cargas-json' ? <JsonLoaderModule /> : null}
+          {page === 'consolidaciones' ? <ConsolidacionesModule /> : null}
+          {page === 'pendientes' ? <PendientesModule /> : null}
+          {page === 'productos' ? <ProductosModule /> : null}
+          {page === 'mercado' ? <MercadoModule /> : null}
+          {page === 'notificaciones' ? <NotificacionesModule /> : null}
+
           {page === 'solicitudes' ? (
             <SolicitudesModule
               amplifyReady={amplifyReady}
@@ -243,9 +277,7 @@ export default function App({ amplifyReady, auth }: AppProps) {
             <div className="rounded-3xl border border-zinc-200/70 bg-white/70 p-6 text-center text-zinc-500">Módulo de Mis Viajes en construcción...</div>
           ) : null}
 
-          {page === 'alertas' ? (
-            <div className="rounded-3xl border border-zinc-200/70 bg-white/70 p-6 text-center text-zinc-500">Módulo de Alertas Comunitarias en construcción...</div>
-          ) : null}
+          {page === 'alertas' ? <AlertasModule /> : null}
 
           {page === 'config' ? (
             <ConfigModule
