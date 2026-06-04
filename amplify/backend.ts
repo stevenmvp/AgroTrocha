@@ -1,4 +1,5 @@
 import { defineBackend } from '@aws-amplify/backend'
+import { Stack } from 'aws-cdk-lib'
 import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam'
 import { auth } from './auth/resource'
 import { data } from './data/resource'
@@ -13,21 +14,31 @@ const backend = defineBackend({
 })
 
 /**
- * Permisos IAM para que la función askBedrock pueda invocar modelos en Bedrock.
- * Esto es crítico para que el backend pueda comunicarse con AWS Bedrock.
+ * Agregar permisos IAM para que la función askBedrock pueda invocar Bedrock.
+ * Accedemos al stack CDK subyacente de Amplify para modificar los permisos.
  */
-const bedrockPolicy = new PolicyStatement({
-  effect: Effect.ALLOW,
-  actions: [
-    'bedrock:InvokeModel',
-    'bedrock:InvokeModelWithResponseStream',
-  ],
-  // Permite acceso a todos los modelos de Bedrock en cualquier región
-  resources: ['arn:aws:bedrock:*::foundation-model/*', 'arn:aws:bedrock:*::inference-profile/*'],
-})
+const stack = Stack.of(backend)
 
-// Agregar el policy a la función Lambda askBedrock
-backend.data.resources.lambda?.askBedrock?.role?.addToPrincipalPolicy(bedrockPolicy)
+// Obtener el rol de la función askBedrock del data backend
+const dataBackend = backend.data
+if (dataBackend && 'resources' in dataBackend) {
+  const lambdaFunction = (dataBackend.resources as any)?.functions?.askBedrock
+  if (lambdaFunction && lambdaFunction.role) {
+    lambdaFunction.role.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'bedrock:InvokeModel',
+          'bedrock:InvokeModelWithResponseStream',
+        ],
+        resources: [
+          'arn:aws:bedrock:*::foundation-model/*',
+          'arn:aws:bedrock:*::inference-profile/*',
+        ],
+      })
+    )
+  }
+}
 
 export default backend
 export { secureOrders, syncExternalData, askBedrock }
