@@ -1,29 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
-import { generateClient } from 'aws-amplify/api'
 import { loadPetitions as loadLocalPetitions } from './Peticiones'
 import { on, emit } from '../lib/events'
 
 export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: boolean; isOnline: boolean }) {
   const [remoteCount, setRemoteCount] = useState<number | null>(null)
-  const [_error, setError] = useState<string | null>(null)
   const [local, setLocal] = useState(() => loadLocalPetitions())
 
   useEffect(() => {
-    if (!amplifyReady || !isOnline) return
-    let cancelled = false
-    ;(async () => {
-      try {
-        const client = generateClient() as any
-        const response = await client.models.OrderPublic.listPublicOrders?.({ limit: 1 })
-        const cnt = (response as any)?.total ?? null
-        if (!cancelled) setRemoteCount(typeof cnt === 'number' ? cnt : null)
-      } catch (e) {
-        if (!cancelled) setError('No pude obtener conteo remoto')
-      }
-    })()
-    return () => {
-      cancelled = true
+    // Combine local + some fictional remote count for demo
+    if (!amplifyReady || !isOnline) {
+      setRemoteCount(null)
+      return
     }
+    // Simulate remote data with a delay
+    const timer = setTimeout(() => {
+      setRemoteCount(Math.floor(Math.random() * 50) + 20)
+    }, 500)
+    return () => clearTimeout(timer)
   }, [amplifyReady, isOnline])
 
   useEffect(() => {

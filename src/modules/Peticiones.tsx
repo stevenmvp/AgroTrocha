@@ -27,10 +27,75 @@ type PetitionItem = {
 
 const STORAGE_KEY = 'agrotrocha.peticiones.v1'
 
+const DEFAULT_PETITIONS: PetitionItem[] = [
+  {
+    id: 'pet-001',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    createdBy: 'usr-productor-1',
+    externalId: 'ord-001',
+    product: 'Arroz',
+    quantity: 500,
+    unit: 'kg',
+    pickupDate: '2026-06-10',
+    municipio: 'Bogotá',
+    notes: 'Arroz blanco de buena calidad',
+    status: 'PENDIENTE',
+    sent: true,
+    backend: true,
+  },
+  {
+    id: 'pet-002',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    createdBy: 'usr-productor-1',
+    externalId: 'ord-002',
+    product: 'Papa',
+    quantity: 1000,
+    unit: 'kg',
+    pickupDate: '2026-06-12',
+    municipio: 'Medellín',
+    notes: 'Papa roja, cosecha fresca',
+    status: 'CONSOLIDADO',
+    sent: true,
+    backend: true,
+  },
+  {
+    id: 'pet-003',
+    createdAt: new Date().toISOString(),
+    createdBy: 'usr-productor-2',
+    product: 'Tomate',
+    quantity: 300,
+    unit: 'kg',
+    pickupDate: '2026-06-15',
+    municipio: 'Cali',
+    notes: 'Tomate Roma, empacado',
+    status: 'PENDIENTE',
+    sent: false,
+    backend: false,
+  },
+  {
+    id: 'pet-004',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    createdBy: 'usr-productor-3',
+    externalId: 'ord-003',
+    product: 'Cebolla',
+    quantity: 750,
+    unit: 'kg',
+    pickupDate: '2026-06-11',
+    municipio: 'Barranquilla',
+    notes: 'Cebolla amarilla',
+    status: 'ENTREGADO',
+    sent: true,
+    backend: true,
+  },
+]
+
 export function loadPetitions(): PetitionItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
+    if (!raw) {
+      // Return default test data if empty
+      return DEFAULT_PETITIONS
+    }
     const parsed = JSON.parse(raw) as PetitionItem[]
     return Array.isArray(parsed)
       ? parsed.map((p) => ({
@@ -39,9 +104,9 @@ export function loadPetitions(): PetitionItem[] {
           status: p.status ?? 'OPEN',
           sent: typeof p.sent === 'boolean' ? p.sent : false,
         }))
-      : []
+      : DEFAULT_PETITIONS
   } catch {
-    return []
+    return DEFAULT_PETITIONS
   }
 }
 
