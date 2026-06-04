@@ -32,7 +32,7 @@ type AppProps = {
 }
 
 export default function App({ amplifyReady, auth }: AppProps) {
-  const [page, setPage] = useState<Page>('perfil')
+  const [page, setPage] = useState<Page>('peticiones')
   const [toast, setToast] = useState<ToastState>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [settings, setSettings] = useState<Settings>(() => loadSettings())
