@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { generateClient } from 'aws-amplify/api'
-import type { Schema } from '../../amplify/data/resource'
 import { loadPetitions as loadLocalPetitions } from './Peticiones'
 import { on, emit } from '../lib/events'
 
 export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: boolean; isOnline: boolean }) {
   const [remoteCount, setRemoteCount] = useState<number | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [_error, setError] = useState<string | null>(null)
   const [local, setLocal] = useState(() => loadLocalPetitions())
 
   useEffect(() => {
@@ -14,8 +13,8 @@ export function DashboardModule({ amplifyReady, isOnline }: { amplifyReady: bool
     let cancelled = false
     ;(async () => {
       try {
-        const client = generateClient<Schema>()
-        const response = await client.models.OrderPublic.listPublicOrders({ limit: 1 })
+        const client = generateClient() as any
+        const response = await client.models.OrderPublic.listPublicOrders?.({ limit: 1 })
         const cnt = (response as any)?.total ?? null
         if (!cancelled) setRemoteCount(typeof cnt === 'number' ? cnt : null)
       } catch (e) {
